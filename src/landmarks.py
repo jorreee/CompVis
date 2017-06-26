@@ -190,9 +190,9 @@ def convert_landmarklist_to_np(lms):
     
 def pca_reduce(lms,mean,num_comp):
     lms = convert_landmarklist_to_np(lms)
-    eigenvals, eigenvecs, mean_n = pca(lms,num_comp)#,np.asarray(mean.T).reshape(1,80))
-    eigenvecs = eigenvecs.T
-    mean_n = mean_n.reshape(1,lengthn*2)
+    eigenvals, eigenvecs, mean_n = pca(lms,num_comp)#,np.asarray(mean.T)
+    mean_n = mean_n.reshape(1,320)
+    print eigenvecs.shape
     terms = cv2.PCAProject(lms,mean_n,eigenvecs)
     
     return mean_n, eigenvecs, eigenvals, terms
@@ -229,7 +229,7 @@ def pca(X, nb_components=0):
     lengths = np.linalg.norm(vecsImg,axis=0)
     vecs = vecsImg.T / lengths[:, np.newaxis]
     
-    return vals, vecs[0:nb_components,:].T, meanSample
+    return vals, vecs[0:nb_components,:], meanSample
     
 def pca_reconstruct(terms, mean, eigenvecs):
     
@@ -282,12 +282,15 @@ if __name__ == '__main__':
     #draw_aligned_landmarks(img,lm)
 
     mean, eigenvecs, eigenvals, lm_reduced = pca_reduce(lm,mean,9)
-    maxNumVecsNeeded = get_num_eigenvecs_needed(eigenvals)
+    
+    #maxNumVecsNeeded = get_num_eigenvecs_needed(eigenvals)
     stdvar = np.std(lm_reduced, axis=0)
     
     recon_lms = pca_reconstruct(lm_reduced, mean, eigenvecs)
     mean2 = mean.reshape(2,lengthn).T
-    plus_one = pca_reconstruct(np.array([[3*stdvar[0],0,0,0,0,0,0,0,0]]),mean, eigenvecs).reshape(2,lengthn).T
+    plus_one = pca_reconstruct(np.array([[-3*stdvar[0],0,0,0,0,0,0,0,0]]),mean, eigenvecs).reshape(2,lengthn).T
+    #plus_one = pca_reconstruct(200*np.array([eigenvals[0:9]]),mean, eigenvecs).reshape(2,lengthn).T
+    #plus_one = pca_reconstruct(np.array([[0,0,0,0,0,0,0,0,0]]),mean, eigenvecs).reshape(2,lengthn).T
     
     draw_aligned_landmarks(img,[mean2,plus_one])
     

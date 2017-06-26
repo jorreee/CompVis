@@ -8,7 +8,7 @@ import scipy.signal as scisig
 import scipy.ndimage.morphology as morf
 
 def apply_filter_train(image):
-    image1 = cv2.medianBlur(img,9)
+    image1 = cv2.medianBlur(image,9)
     image2 = cv2.bilateralFilter(image1,9,175,175)
     kernel = np.ones((100,100),np.uint8)
     image3 = cv2.add(image2, cv2.morphologyEx(image2,cv2.MORPH_TOPHAT,kernel))
