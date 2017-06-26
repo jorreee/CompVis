@@ -19,19 +19,62 @@ def apply_filter_train(image):
     
     return image5
     
-
+def apply_canny(img_o,img):
+    h1 = 10*2*2*1.5
+    detection = cv2.Canny(img,h1/2,h1)
+    result = np.zeros(img.shape)
+    result[detection.astype(np.bool)]=1
+    
+    return result
+    
+def apply_laplacian(img):
+    laplacian = cv2.Laplacian(img,cv2.CV_64F,ksize=11)
+    
+    return laplacian
+    
+def apply_sobel(img):
+    kersize = 3
+    sobelx = cv2.Sobel(img,cv2.CV_64F,1,0,ksize=kersize)
+    sobely = cv2.Sobel(img,cv2.CV_64F,0,1,ksize=kersize)
+    
+    return cv2.add(sobelx,sobely)
+    
+def apply_sobel_stolen(img): # :^}
+    img = cv2.GaussianBlur(img,(3,3),0)
+    kersize = 3
+    sobelx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=kersize)
+    sobely = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=kersize)
+    
+    absx = cv2.convertScaleAbs(sobelx)
+    absy = cv2.convertScaleAbs(sobely)
+    
+    combined = cv2.addWeighted(absx, 0.5, absy, 0.5, 0)
+    combined[combined > 30] *= 2
+    return combined
+    
     
 if __name__ == '__main__':
-    img = cv2.imread("data/Radiographs/04.tif")
+    img = cv2.imread("data/Radiographs/01.tif")
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = img[550:1430,1150:1850]
+    img_o = np.copy(img)
+    
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     height, width = img.shape;
     cv2.resizeWindow('image', width / 2, height /2)
     cv2.imshow('image',img);
-    cv2.waitKey(0)
+    #cv2.waitKey(0)
 
     img = apply_filter_train(img)    
+    
+    cv2.namedWindow('image',cv2.WINDOW_NORMAL)
+    height, width = img.shape;
+    cv2.resizeWindow('image', width / 2, height /2)
+    cv2.imshow('image',img);
+    #cv2.waitKey(0)
+
+    # img = apply_canny(img_o, img) 
+    img = apply_sobel_stolen(img)    
     
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     height, width = img.shape;
