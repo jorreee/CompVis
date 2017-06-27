@@ -192,7 +192,7 @@ def pca_reduce(lms,mean,num_comp):
     lms = convert_landmarklist_to_np(lms)
     eigenvals, eigenvecs, mean_n = pca(lms,num_comp)#,np.asarray(mean.T)
     mean_n = mean_n.reshape(1,320)
-
+    
     terms = cv2.PCAProject(lms,mean_n,eigenvecs)
     
     return mean_n, eigenvecs, eigenvals, terms
