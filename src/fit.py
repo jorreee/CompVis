@@ -25,6 +25,29 @@ def draw_initial_landmarks(img,ls):
             lm.draw_landmark(img,lss[i],color=(200,200,0),thicc=2)
     return lss
     
+def draw_initial_landmarks_orient(img,ls,orient):
+    sep = get_jaw_separation(img)
+    lss = ls
+    scalefactor = 900
+    scalen = scalefactor * np.sqrt(lm.lengthn/40)
+    if orient == 0:
+        ty = sep + (scalen * np.min(mean,0))[1]
+    elif orient == 1:
+        ty = sep - (scalen * np.min(mean,0))[1]
+    else:
+        print "Only up and down are supported as of yet."
+    tx = 360
+    for el in lss:
+        for i in range(0,len(el)):
+            el[i,0] = el[i,0] * scalen + tx
+            el[i,1] = el[i,1] * scalen + ty
+    for i in range(len(lss)):
+        if i == 0:
+            lm.draw_landmark(img,lss[i],color=(0,0,0),thicc=2)
+        else:
+            lm.draw_landmark(img,lss[i],color=(200,200,0),thicc=2)
+    return lss
+    
 def get_normals_single_tooth(pointlist):
     normals = np.zeros((40,2))
     for ind in range(40):
@@ -78,7 +101,8 @@ def get_img(i):
     else:
         img = cv2.imread("data/Radiographs/"+str(i)+".tif")
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = img[550:1430,1150:1850]
+    img = img[500:1430,1150:1850]
+    #img = img[750:1150,1150:1850]
     
     return img
     
@@ -145,24 +169,47 @@ def slice_image(coords,img):
     
     return values
     
+def get_jaw_separation(img):
+    smallerimg = img[250:650,:]
+    means = []
+    for i in range(len(smallerimg[:,1])):
+        means.append(np.mean(smallerimg[i,:]))
+    print np.argmin(means)
+    return np.argmin(means) + 250
+
+def draw_jaw_separation(img,yval):
+    for ind in range(len(img[1,:]) - 1):
+        cv2.line(img,
+                (ind,int(yval)),
+                ((ind + 1),
+                (int(yval))),
+                (255,0,0),
+                2);
+    
+    return None
+    
+    
     
 if __name__ == '__main__':
     # Get image to fit
     img_to_fit = get_img(1)
+    y = get_jaw_separation(img_to_fit)
+    draw_jaw_separation(img_to_fit,y)
+    
     # Get edge images to build statistical model from
     all_edge_imgs = get_all_edge_img(10)
     # Get shape we'll try to fit
-    lms = lm.read_all_landmarks_by_orientation(0)
+    lms = lm.read_all_landmarks_by_orientation(1)
     # Build ASM
     lms,meano = lm.procrustes(lms)
-    lss = draw_initial_landmarks(img_to_fit,[meano])
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms,meano,9)
     mean = mean.reshape(2,160).T
-    
-    #init = draw_initial_landmarks(img_to_fit,[mean])
-    
-    img_to_fit = fit(img_to_fit, meano, eigenvecs, all_edge_imgs)
-    
+    draw_initial_landmarks_orient(img_to_fit,[mean],1) 
+    #
+    ##init = draw_initial_landmarks(img_to_fit,[mean])
+    #
+    ##img_to_fit = fit(img_to_fit, meano, eigenvecs, all_edge_imgs)
+    #
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     height, width = img_to_fit.shape;
     cv2.resizeWindow('image', width / 2, height /2)
