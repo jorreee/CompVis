@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 import cv2
-import cv2.cv as cv
-import os
 import numpy as np
-import fnmatch
-import scipy.signal as scisig
-import scipy.ndimage.morphology as morf
 
 def apply_filter_train(image):
     image1 = cv2.medianBlur(image,9)
