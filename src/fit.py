@@ -73,7 +73,10 @@ def draw_normals(img,lpts,norms):
     return img
     
 def get_img(i):
-    img = cv2.imread("data/Radiographs/10.tif")
+    if i < 10:
+        img = cv2.imread("data/Radiographs/0"+str(i)+".tif")
+    else:
+        img = cv2.imread("data/Radiographs/"+str(i)+".tif")
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = img[550:1430,1150:1850]
     
@@ -81,24 +84,35 @@ def get_img(i):
     
 def get_all_edge_img(excepti):
     edges = np.array([])
-    for i in range(14):
+    for i in range(13):
         if i == excepti:
             continue
-        imgi = get_img(i)
+        imgi = get_img(i+1)
         imgi = pp.apply_filter_train(imgi)
         imgi = pp.apply_sobel(imgi)
         np.append(edges,imgi)
     
     return edges
     
-def get_slice(point,nv, k):    
-    a = np.asarray(point)
-    b = np.asarray(point + nv*k)
+def get_single_slice_side(point,nv, k):    
+    a = np.array(point)
+    b = np.array(point + nv*k)
     coordinates = (a[:, np.newaxis] * np.linspace(1, 0, k+1) +
                    b[:, np.newaxis] * np.linspace(0, 1, k+1))
     coordinates = coordinates.astype(np.int)
-    print coordinates
+    
     return coordinates
+    
+def get_slice(point,nv, k):    
+    up = get_single_slice_side(point,nv,k)
+    
+    down = get_single_slice_side(point, -1*nv,k)
+    down = np.delete(down,0,1)
+    down = down[:,::-1]
+    
+    tot = np.concatenate((down,up),1)
+    
+    return tot
     
 def fit(imgtf, mean, eigvs, edgeimgs):
     
@@ -108,17 +122,33 @@ def fit(imgtf, mean, eigvs, edgeimgs):
     normalvectors = get_normals(mean)
     normalvectors = normalvectors
     
+    # Voor ieder punt
     for i in range(lm.lengthn):
+        # Bereken de slice 
         slicel = get_slice(mean[i],normalvectors[i],5)
+        own_gradient_profile = slice_image(slicel,grad_imgi)
+        if i == 123:
+            print mean[i]
+            print normalvectors[i]
+            print slicel
+            print own_gradient_profile
     
     imgtf = draw_normals(imgtf,mean,normalvectors)
     
     return imgtf
     
+def slice_image(coords,img):
+    r, c = coords.shape
+    values = np.ones(c)
+    for i in range(c):
+        values[i] = img[coords[0,i],coords[1,i]]
+    
+    return values
+    
     
 if __name__ == '__main__':
     # Get image to fit
-    img_to_fit = get_img(10)
+    img_to_fit = get_img(1)
     # Get edge images to build statistical model from
     all_edge_imgs = get_all_edge_img(10)
     # Get shape we'll try to fit
@@ -129,7 +159,7 @@ if __name__ == '__main__':
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms,meano,9)
     mean = mean.reshape(2,160).T
     
-    #init = draw_initial_landmarks(img,[mean])
+    #init = draw_initial_landmarks(img_to_fit,[mean])
     
     img_to_fit = fit(img_to_fit, meano, eigenvecs, all_edge_imgs)
     
