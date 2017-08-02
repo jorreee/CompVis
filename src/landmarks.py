@@ -226,19 +226,27 @@ def convert_landmarklist_to_np(lms):
     # print xlms.shape
     
     return xlms
-    
 
-def pca_reduce(lms,mean,num_comp):
+# Extracts a PCA model from the given list of shapes, using the specified number
+# of components. 
+#
+# Returns     the mean shape as a column vector, 
+#             a matrix with the num_comp largest eigenvectors as columns, 
+#             a column vector containing ALL eigenvalues, sorted large to small,
+#             a matrix containing the PCA terms for all input shapes as columns
+#
+def pca_reduce(lmls,mean,num_comp):
     #lms = convert_landmarklist_to_np(lms)
     #TODO vorm
+    lms = np.copy(lmls).T
     eigenvals, eigenvecs, mean_n = pca(lms,num_comp)#,np.asarray(mean.T)
-    mean_n = mean_n.reshape(1,320)
+    mean_n = np.reshape(mean_n,(mean_n.shape[0],1))
+    eigenvals = np.reshape(eigenvals,(eigenvals.shape[0],1))
     
-    terms = cv2.PCAProject(lms,mean_n,eigenvecs)
+    terms = cv2.PCAProject(lms.T,mean_n,eigenvecs)
     
-    return mean_n, eigenvecs, eigenvals, terms
+    return mean_n, eigenvecs.T, eigenvals, terms
 
-#TODO pca reduce
 def pca(X, nb_components=0):
     '''
     Do a PCA analysis on X
@@ -273,9 +281,12 @@ def pca(X, nb_components=0):
     
     return vals, vecs[0:nb_components,:], meanSample
     
+# Input: terms = matrix containing terms as columns
+#        mean = mean as column vector
+#        eigenvecs = matrix containing eigenvectors as columns
 def pca_reconstruct(terms, mean, eigenvecs):
     
-    return cv2.PCABackProject(terms, mean, eigenvecs)
+    return cv2.PCABackProject(terms, mean, eigenvecs.T)
 
 def get_num_eigenvecs_needed(eigenvals):
     num = 0
