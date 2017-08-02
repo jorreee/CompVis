@@ -23,13 +23,13 @@ def draw_initial_landmarks(img,ls):
     
 def draw_initial_landmarks_orient(img,ls,orient):
     sep = get_jaw_separation(img)
-    lss = ls
+    lss = np.copy(ls)
     scalefactor = 900
     scalen = scalefactor * np.sqrt(lm.lengthn/40)
     if orient == 0:
-        ty = sep + (scalen * np.min(mean,0))[1]
+        ty = sep + (scalen * np.min(lss[0],0))[1]
     elif orient == 1:
-        ty = sep - (scalen * np.min(mean,0))[1]
+        ty = sep - (scalen * np.min(lss[0],0))[1]
     else:
         print "Only up and down are supported as of yet."
     tx = 360
@@ -42,7 +42,8 @@ def draw_initial_landmarks_orient(img,ls,orient):
             lm.draw_landmark(img,lss[i],color=(0,0,0),thicc=2)
         else:
             lm.draw_landmark(img,lss[i],color=(200,200,0),thicc=2)
-    return lss
+    
+    return lss[0]
     
 def get_normals_single_tooth(pointlist):
     normals = np.zeros((40,2))
@@ -138,7 +139,7 @@ def get_slice(point,nv, k):
     return tot
     
 def fit(imgtf, mean, eigvs, edgeimgs, k):
-    print mean.shape
+    #print mean.shape
     m = 2*k
     grad_imgi = pp.apply_filter_train(imgtf)
     grad_imgi = pp.apply_sobel(grad_imgi)
@@ -149,18 +150,20 @@ def fit(imgtf, mean, eigvs, edgeimgs, k):
     approx = np.copy(mean)
     # Voor ieder punt
     for i in range(lm.lengthn):
-        # Bereken de slice 
+        # Bereken stat model
         slicel = get_slice(approx[i],normalvectors[i],k)
         pmean, pcov = get_statistical_model(edgeimgs,slicel,k)
         
+        # Bereken eigen sample
         slices = get_slice(approx[i],normalvectors[i],m)
         own_gradient_profile = slice_image(slices,grad_imgi)
+        
         dist = np.zeros(2*(m - k) + 1)
         for j in range(0,2*(m - k) + 1):
             dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)],pmean,np.linalg.pinv(pcov))
         min_ind = np.argmin(dist)
-        new_point = slices[:,min_ind]
-        print str(approx[i]) + " becomes " + str(new_point)
+        new_point = slices[:,min_ind+k]
+        #print str(approx[i]) + " becomes " + str(new_point)
         approx[i] = new_point
       
     # imgtf = draw_normals(imgtf,mean,normalvectors)
@@ -208,17 +211,31 @@ def draw_jaw_separation(img,yval):
     
     return None
     
+def match_model_to_target(newpoints, model, eigenvecs):
+    #1. 
+    b = np.zeros(9)
+    lastb = np.zeros(9)
     
+    #2.
+    x = cv2.PCABackProject(b,model.reshape(320,1),eigenvecs)
+    
+    #3.
+    t, s, theta = lm.get_align_params(x, newpoints)
+    
+    #4.
+    
+    
+    return None    
     
 if __name__ == '__main__':
     # Get image to fit
-    img_to_fit = get_img(10)
+    img_to_fit = get_img(1)
     
     y = get_jaw_separation(img_to_fit)
     draw_jaw_separation(img_to_fit,y)
     
     # Get edge images to build statistical model from
-    all_edge_imgs = get_all_edge_img(10)
+    all_edge_imgs = get_all_edge_img(1)
     
     # Get shape we'll try to fit
     lms = lm.read_all_landmarks_by_orientation(0)
@@ -226,13 +243,16 @@ if __name__ == '__main__':
     lms,meano = lm.procrustes(lms)
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms,meano,9)
     mean = mean.reshape(2,160).T
+    lss = draw_initial_landmarks_orient(img_to_fit,[mean],0)
     
     #init = draw_initial_landmarks(img_to_fit,[mean])
     
     #img_to_fit = 
-    newlm = fit(img_to_fit, mean, eigenvecs, all_edge_imgs, 5)
+    newlmraw = fit(img_to_fit, lss, eigenvecs, all_edge_imgs, 5)
     
-    lm.draw_landmark(img_to_fit,newlm)
+    newlm = match_model_to_target(newlmraw, lss, eigenvecs)
+    
+    lm.draw_landmark(img_to_fit,newlmraw)
     
     #draw_initial_landmarks_orient(img_to_fit,[mean],0) 
     
