@@ -105,56 +105,63 @@ def procrustes(ls):
     #Translate landmarks to origin
     ls = center_orig_all(ls)
     
-    #Flatten landmark list
-    lsflat = map(lambda e: e.flatten(),ls)
-    
     #Choose first example for initial mean estimate and rescale
-    x0 = lsflat[0]
+    x0 = ls[:,0]
     x0 = normalize(x0)
     mean = x0
 
     while True:
         
         # Align all landmarks with mean
-        for i in range(0,len(lsflat)) :
-            lsflat[i] = align(lsflat[i], mean)
-                    
+        ls = ls.T
+        for i in range(0,len(ls[:,0])) :
+            ls[i] = align(ls[i], mean).flatten()
+        ls = ls.T
         # Re-estimate the mean
-        new_mean = estimate_mean(lsflat)
-        
+        new_mean = estimate_mean(ls)
         # Center new mean
-        new_mean = center_orig(np.reshape(new_mean,(lengthn,2))).flatten()
+        new_mean = center_orig(new_mean)
         # Normalize and align new mean to initial mean
         new_mean = normalize(align(new_mean,x0))
         # Re-center new mean
-        new_mean = center_orig(np.reshape(new_mean,(lengthn,2))).flatten()
+        new_mean = center_orig(new_mean)
 
         # Check for convergence
-        if (mean - new_mean < 0.000001).all():
+        if (mean - new_mean < 0.001).all():
             break
         else:
             mean = new_mean
     
-    # Reshape the result
-    ls = map(lambda e: np.reshape(e,(lengthn,2)),lsflat)
-    mean = np.reshape(mean,(lengthn,2))
-    
     return np.array([ls,mean])
     
-
+# Extracts the centroid of a shape
 def extract_centroid(lpts):
-    return np.array([np.mean(lpts[:,0]),np.mean(lpts[:,1])]) 
+    # Get the dividing index between x and y coords
+    half = lpts.size / 2
+    # Get the flattened mean coordinates [x,y]
+    centroidflat = np.array([np.mean(lpts[:half]),np.mean(lpts[half:])])
+    # Reshape the mean coordinates to [x,y]^T
+    return np.reshape(centroidflat,(2,1))
 
 # Center one landmark to origin
 def center_orig(mark):
+    #Extract the centroid
     centroid = extract_centroid(mark)
-    mark = mark - centroid
-    return mark
+    mark = mark.flatten()
+    half = mark.size / 2
+    # Subtract the centroid from the landmark
+    result = np.concatenate((mark[:half] - centroid[0,0],mark[half:] - centroid[1,0]),axis=0)
+    # Reshape the result to a single column
+    return np.reshape(result,(mark.size,1))
     
     
-# Center landmarks ls to origin
+# Center all shapes ls to origin
+# A shape is represented by a column
 def center_orig_all(ls):
-    return map(lambda lpts: center_orig(lpts),ls)
+    def flatten_center(mark):
+        return center_orig(mark).flatten()
+    # Center all the columns to the origin
+    return np.apply_along_axis(flatten_center,0,ls)
     
 def normalize(v):
     norm=LA.norm(v)
@@ -162,16 +169,16 @@ def normalize(v):
        return v
     return v/norm
 
-# Estimates the mean landmark of a set of landmarks for a tooth
-def estimate_mean(lsflat):
-    mean = np.zeros(len(lsflat[0]))
-    for mark in lsflat:
-        mean += mark
-    return mean/(len(lsflat[0]))
+# Estimates the mean shape of a set of shapes
+def estimate_mean(ls):
+    ss = np.sum(ls,1)
+    return np.reshape(ss/(len(ls[0,:])),(ss.size,1))
     
 
 #Aligns shape x1 to x2
 def align(x1,x2):
+    x1 = np.reshape(x1,(x1.size / 2, 2),'F').flatten()
+    x2 = np.reshape(x2,(x2.size / 2, 2),'F').flatten()
     x1norm2 = np.dot(x1,x1)
     a = np.dot(x1,x2) / x1norm2
     b = 0
@@ -185,9 +192,10 @@ def align(x1,x2):
         nr = np.dot(srm,[x1[k],x1[k+1]])
         x1[k] = nr[0]
         x1[k+1] = nr[1]
-    
+    x1 = np.reshape(x1,(x1.size, 1),'F')
     return x1
-    
+   
+#TODO 
 #Aligns shape x1 to x2, X
 def get_align_params(x1o,x2o):
     x1c = extract_centroid(x1o)
@@ -294,7 +302,8 @@ def get_num_eigenvecs_needed(eigenvals):
 if __name__ == '__main__':
     imgo = read_all_landmarks_by_orientation(0)
     print imgo
-    print imgo.shape
+
+    print procrustes(imgo)
     # Dental radiograph inladen
     #img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
     
