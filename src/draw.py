@@ -10,6 +10,7 @@ import math
 
 lengthn = 160
 def draw_landmark(img,lpts,color=(255,0,0),thicc=1):
+    lpts = np.reshape(lpts,(lpts.size / 2, 2),'F')
     for ind in range(lengthn-1):
         if (ind+1) % 40 == 0:
             continue
@@ -25,8 +26,8 @@ def draw_landmark(img,lpts,color=(255,0,0),thicc=1):
     return None
     
 def draw_all_landmarks(img,ls):
-    for lm in ls:
-        draw_landmark(img,lm)
+    for lm in ls.T:
+        draw_landmark(img,lm.T)
     
     return None
     

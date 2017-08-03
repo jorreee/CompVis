@@ -102,7 +102,7 @@ def read_all_landmarks_by_orientation(toothies):
             orientteeth = imgteeth
         ls.append(orientteeth.flatten())
     
-    return np.array(ls)
+    return np.array(ls).T
             
     
 # Aligns a list of shapes on the first element of that list. 
