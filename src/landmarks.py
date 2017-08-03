@@ -107,7 +107,7 @@ def procrustes(ls):
     
     #Choose first example for initial mean estimate and rescale
     x0 = ls[:,0]
-    x0 = normalize(x0)
+    x0 = normalize_shape(x0)
     mean = x0
 
     while True:
@@ -122,17 +122,17 @@ def procrustes(ls):
         # Center new mean
         new_mean = center_orig(new_mean)
         # Normalize and align new mean to initial mean
-        new_mean = normalize(align(new_mean,x0))
+        new_mean = normalize_shape(align(new_mean,x0))
         # Re-center new mean
         new_mean = center_orig(new_mean)
 
         # Check for convergence
-        if (mean - new_mean < 0.001).all():
+        if (mean - new_mean < 0.000001).all():
             break
         else:
             mean = new_mean
-    
-    return np.array([ls,mean])
+             
+    return [ls,mean]
     
 # Extracts the centroid of a shape
 def extract_centroid(lpts):
@@ -163,11 +163,11 @@ def center_orig_all(ls):
     # Center all the columns to the origin
     return np.apply_along_axis(flatten_center,0,ls)
     
-def normalize(v):
+def normalize_shape(v):
     norm=LA.norm(v)
     if norm==0: 
        return v
-    return v/norm
+    return np.reshape(v/norm,(v.size,1))
 
 # Estimates the mean shape of a set of shapes
 def estimate_mean(ls):
@@ -192,6 +192,7 @@ def align(x1,x2):
         nr = np.dot(srm,[x1[k],x1[k+1]])
         x1[k] = nr[0]
         x1[k+1] = nr[1]
+    x1 = np.reshape(x1,(x1.size / 2, 2))
     x1 = np.reshape(x1,(x1.size, 1),'F')
     return x1
    
@@ -312,9 +313,7 @@ def get_num_eigenvecs_needed(eigenvals):
     
 if __name__ == '__main__':
     imgo = read_all_landmarks_by_orientation(0)
-    print imgo
 
-    print procrustes(imgo)
     # Dental radiograph inladen
     #img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
     
