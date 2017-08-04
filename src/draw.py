@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*-
 import cv2
-import cv2.cv as cv
-import os
 import numpy as np
-from numpy import linalg as LA
-import sklearn.decomposition as skldecomp
-import fnmatch
-import math
 
 lengthn = 160
 # Takes a column vector and interprets it as all x coordinates followed by all y coordinates, then draws a line between the points on the given image
