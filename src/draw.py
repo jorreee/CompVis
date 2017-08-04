@@ -12,7 +12,7 @@ lengthn = 160
 # Takes a column vector and interprets it as all x coordinates followed by all y coordinates, then draws a line between the points on the given image
 def draw_contour(img,lm,color=(255,0,0),thicc=1):
 #    for ind in range(lengthn-1):
-	lpts = np.reshape(lm,((len/2) - 1,1),'F')
+	lpts = np.reshape(lm,((len/2) - 1,2),'F')
     for ind in range(len(lpts)):
         if (ind+1) % 40 == 0:
             continue

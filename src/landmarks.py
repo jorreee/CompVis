@@ -35,10 +35,18 @@ def read_mirrored_landmark(lm_file):
 # (y01, y11, ..., yn1)
 # (..., ..., ..., ...)
 def read_all_landmarks_by_img(imgi):
-    ls = []
+    lsx = np.array([])
+    lsy = np.array([])
     for i in range(8):
-        ls.append(read_landmark('data/Landmarks/landmarks'+str(imgi)+'-'+str(i+1)+'.txt'))
-    return np.array(ls).T
+        if imgi < 14:
+            tooth = read_landmark('data/Landmarks/landmarks'+str(imgi)+'-'+str(i+1)+'.txt')
+        else:
+            tooth = read_mirrored_landmark('data/Landmarks/landmarks'+str(imgi)+'-'+str(i+1)+'.txt')
+        half = tooth.size / 2
+        lsx = np.concatenate((lsx,tooth[:half]))
+        lsy = np.concatenate((lsy,tooth[half:]))
+    result = np.concatenate((lsx,lsy))
+    return np.reshape(result,(result.size,1))
 
 
 # Returns a collection of landmark files for a specific radiograph as a matrix 
@@ -65,37 +73,37 @@ def read_all_landmarks_by_tooth(toothi):
 # t1  (x00, x10, ..., xn0)
 #     (x01, x11, ..., xn1)
 #     (..., ..., ..., ...)
-#     (y00, y10, ..., yn0)
-#     (y01, y11, ..., yn1)
-#     (..., ..., ..., ...)
 # t2  (x00, x10, ..., xn0)
 #     (x01, x11, ..., xn1)
 #     (..., ..., ..., ...)
-#     (y00, y10, ..., yn0)
+# t1  (y00, y10, ..., yn0)
+#     (y01, y11, ..., yn1)
+#     (..., ..., ..., ...)
+#t2   (y00, y10, ..., yn0)
 #     (y01, y11, ..., yn1)
 #     (..., ..., ..., ...)
 #
 # number of rows is a multiple of 80 (80 coordinates per landmark file)
 def read_all_landmarks_by_orientation(toothies):
     ls = []
-    for l in range(28):
-        ls.append([])
+    #for l in range(28):
+     #   ls.append([])
     
-    if toothies == 0:
-        teethi = [1,2,3,4]
-    elif toothies == 1:
-        teethi = [5,6,7,8]
-    else:
-        teethi = [1,2,3,4,5,6,7,8]
-        
-    for i in teethi:
-        lmi = read_all_landmarks_by_tooth(i)
-        for k in range(lmi.shape[1]):
-            if len(ls[k]) == 0:
-                ls[k] = lmi[:,k]
-            else:
-                ls[k] = np.concatenate((ls[k],lmi[:,k]),axis=0)
+    for i in range(28):
+        imgteeth = read_all_landmarks_by_img(i + 1)
+        half = imgteeth.size / 2
+        orientsplit = half / 2
+        orientteeth = np.array([])
+        if toothies == 0:
+            orientteeth = np.concatenate(((imgteeth[:orientsplit]),imgteeth[half:half+orientsplit]))
+        elif toothies == 1:
+            orientteeth = np.concatenate(((imgteeth[orientsplit:half]),imgteeth[orientsplit + half:]))
+        else: 
+            orientteeth = imgteeth
+        ls.append(orientteeth.flatten())
+    
     return np.array(ls).T
+            
     
 # Aligns a list of shapes on the first element of that list. 
 # Returns the collection of aligned shapes and the mean shape.
@@ -312,8 +320,8 @@ def get_num_eigenvecs_needed(eigenvals):
     return num
     
 if __name__ == '__main__':
-    imgo = read_all_landmarks_by_orientation(0)
-
+    imgo = read_all_landmarks_by_orientation(1)
+    print imgo.shape
     # Dental radiograph inladen
     #img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
     
