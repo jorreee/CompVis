@@ -8,6 +8,7 @@ import sklearn.decomposition as skldecomp
 import fnmatch
 import math
 import draw; reload(draw)
+import greylevel as gl; reload(gl)
 
 
 lengthn = 160
@@ -321,29 +322,26 @@ def get_num_eigenvecs_needed(eigenvals):
     
 if __name__ == '__main__':
     marks = read_all_landmarks_by_orientation(0)
-    newmarks = center_orig_all(marks)
-    transposedmarks= np.copy(newmarks).T # alle lms zijn nu de rijen
-    for i in range(transposedmarks.shape[0]): # ga over alle rijen
-	transposedmarks[i] = normalize_shape(np.reshape(transposedmarks[i],(transposedmarks[i].size,1))).flatten()
-    newmarks = transposedmarks.T
-    
-        
+    normies = gl.get_normals(np.reshape(marks[:,0],(marks[:,0].size,1)))
     # Lege witte image maken voor procrustes afbeelding
-    img = np.zeros((512,512,3), np.uint8)
-    img[:] = (255, 255, 255)
-    #img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
-    #draw.draw_all_contours(img, marks)
-    [lm,mn] = procrustes(marks)
-    mean, eigenvecs, eigenvals, lm_reduced = pca_reduce(lm,9)
+    #img = np.zeros((512,512,3), np.uint8)
+    #img[:] = (255, 255, 255)
+    img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
     
-    stdvar = np.std(lm_reduced, axis=1)
-    recon_lms = pca_reconstruct(lm_reduced, mean, eigenvecs)
+    
+    draw.draw_all_contours(img, np.reshape(marks[:,0],(marks[:,0].size,1)))
+    draw.draw_normals(img, np.reshape(marks[:,0],(marks[:,0].size,1)), normies)
+    #[lm,mn] = procrustes(marks)
+    #mean, eigenvecs, eigenvals, lm_reduced = pca_reduce(lm,9)
+    
+    #stdvar = np.std(lm_reduced, axis=1)
+    #recon_lms = pca_reconstruct(lm_reduced, mean, eigenvecs)
     #mean2 = mean.reshape(2,lengthn).T
-    plus_one = pca_reconstruct(np.array([[3*stdvar[0],0,0,0,0,0,0,0,0]]).flatten(),mean, eigenvecs)
+    #plus_one = pca_reconstruct(np.array([[3*stdvar[0],0,0,0,0,0,0,0,0]]).flatten(),mean, eigenvecs)
     #plus_one = pca_reconstruct(200*np.array([eigenvals[0:9]]),mean, eigenvecs).reshape(2,lengthn).T
     #plus_one = pca_reconstruct(np.array([[0,0,0,0,0,0,0,0,0]]),mean, eigenvecs).reshape(2,lengthn).T
     #draw.draw_aligned_contours(img,plus_one)
-    draw.draw_aligned_contours(img,plus_one)
+    #draw.draw_aligned_contours(img,plus_one)
     
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     height, width, _ = img.shape;

@@ -52,14 +52,19 @@ def draw_aligned_contours(img,ls):
     draw_all_contours(img,lst.T) # zet lms terug als columns en teken
     return None
 
-#TODO
-def draw_pca_reconstruction(img,lms):
-    lss = lms
-    lsss = map(lambda el: el.reshape(2,lengthn), lss)
-    for k in range(len(lsss)):
-        el = lsss[k].T
-        for i in range(lengthn):
-            el[i,0] = el[i,0] * 503 + 250
-            el[i,1] = el[i,1] * 503 + 250
-    draw_contour(img,el)
+# Draws the normals for landmarks , which all have to be situated in image space  
+def draw_normals(img,lpts,norms):
+    #Arbitrary scaling for visualizing the normals
+    norms = -15 * norms  
+    half = lpts.size/2
+    lpts = np.reshape(lpts,(half,2),'F')
+    norms = np.reshape(norms,(half,2),'F')
+    for ind in range(160):
+        cv2.line(img,
+                (int(float(lpts[ind,0])),int(float(lpts[ind,1]))),
+                (   int(float(norms[ind,0] + lpts[ind,0])),
+                    int(float(norms[ind,1] + lpts[ind,1]))),
+                (255,0,0),
+                2);
+    
     return None
