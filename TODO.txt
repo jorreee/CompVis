@@ -1,0 +1,27 @@
+MAIN IMPLEMENTATIE:
+- Refactor code, gebruik conventies zoals in Cootes et al x = (x0,x1, .., y0, ...), x = x + Pb, etc etc. Specifieer de transformaties tussen object en image space!
+- Betere file structuur? Nu eigenlijk enkel nog maar fit, landmarks en preprocess
+- Verander het shape model naar een combinatie van 4 tanden: shape parameters (eigenvectors) gelden altijd voor één tand, transformatie vector T geldt voor alle 4 (Vaste afstand tussen tanden?) => Enige verschil is de eigenvectoren en dus variaties in model
+- Vind een manier om gradienten te berekenen langs een richting voor grey level model
+- Werk de methode af om model parameters te vinden best passend bij suggestiepunten => zou gemakkelijk moeten zijn na refactoring, Procrustes
+- Maak de ASM methode => ook gemakkelijk?
+- Multi resolution framework maken
+
+TESTING:
+- Leave one out analysis, error functie nog invullen
+(Vooral visueel is belangrijk, error waarden zijn enkel echt belangrijk voor verslag)
+
+REPORT:
+Alle keuzes beargumenteren, voor de rest beetje structuur van Cootes volgen
+
+PRESENTATIE:
+Kan vrij analoog aan report
+
+
+Code hergebruik overview:
+- Procrustes: refactoring nodig voor conventies en geef bepaalde transformaties terug
+- PCA: zou in orde moeten zijn
+- Pre-processing: no changes needed
+- Draw methodes: horrible, needs refactoring
+- Grey level model: op gradient richting na in orde?
+- Initial position: 

@@ -7,6 +7,7 @@ from numpy import linalg as LA
 import sklearn.decomposition as skldecomp
 import fnmatch
 import math
+import draw; reload(draw)
 
 
 lengthn = 160
@@ -60,9 +61,9 @@ def read_all_landmarks_by_img(imgi):
 def read_all_landmarks_by_tooth(toothi):
     ls = []
     for i in range(14):
-        ls.append(read_landmark('data/Landmarks/landmarks'+str(i+1)+'-'+str(toothi)+'.txt'))
+        ls.append(read_landmark('data/Landmarks/landmarks'+str(i+1)+'-'+str(toothi + 1)+'.txt'))
     for i in range(14):
-        ls.append(read_mirrored_landmark('data/Landmarks/landmarks'+str(i+15)+'-'+str(toothi)+'.txt'))
+        ls.append(read_mirrored_landmark('data/Landmarks/landmarks'+str(i+15)+'-'+str(toothi + 1)+'.txt'))
     return np.array(ls).T
 
 
@@ -119,7 +120,7 @@ def procrustes(ls):
     mean = x0
 
     while True:
-        
+        print "ITERATION"
         # Align all landmarks with mean
         ls = ls.T
         for i in range(0,len(ls[:,0])) :
@@ -252,7 +253,7 @@ def convert_landmarklist_to_np(lms):
 #             a column vector containing ALL eigenvalues, sorted large to small,
 #             a matrix containing the PCA terms for all input shapes as columns
 #
-def pca_reduce(lmls,mean,num_comp):
+def pca_reduce(lmls,num_comp):
     #lms = convert_landmarklist_to_np(lms)
     #TODO vorm
     lms = np.copy(lmls).T
@@ -302,7 +303,6 @@ def pca(X, nb_components=0):
 #        mean = mean as column vector
 #        eigenvecs = matrix containing eigenvectors as columns
 def pca_reconstruct(terms, mean, eigenvecs):
-    
     return cv2.PCABackProject(terms, mean, eigenvecs.T)
 
 def get_num_eigenvecs_needed(eigenvals):
@@ -320,8 +320,36 @@ def get_num_eigenvecs_needed(eigenvals):
     return num
     
 if __name__ == '__main__':
-    imgo = read_all_landmarks_by_orientation(1)
-    print imgo.shape
+    marks = read_all_landmarks_by_orientation(0)
+    newmarks = center_orig_all(marks)
+    transposedmarks= np.copy(newmarks).T # alle lms zijn nu de rijen
+    for i in range(transposedmarks.shape[0]): # ga over alle rijen
+	transposedmarks[i] = normalize_shape(np.reshape(transposedmarks[i],(transposedmarks[i].size,1))).flatten()
+    newmarks = transposedmarks.T
+    
+        
+    # Lege witte image maken voor procrustes afbeelding
+    img = np.zeros((512,512,3), np.uint8)
+    img[:] = (255, 255, 255)
+    #img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
+    #draw.draw_all_contours(img, marks)
+    [lm,mn] = procrustes(marks)
+    mean, eigenvecs, eigenvals, lm_reduced = pca_reduce(lm,9)
+    
+    stdvar = np.std(lm_reduced, axis=1)
+    recon_lms = pca_reconstruct(lm_reduced, mean, eigenvecs)
+    #mean2 = mean.reshape(2,lengthn).T
+    plus_one = pca_reconstruct(np.array([[3*stdvar[0],0,0,0,0,0,0,0,0]]).flatten(),mean, eigenvecs)
+    #plus_one = pca_reconstruct(200*np.array([eigenvals[0:9]]),mean, eigenvecs).reshape(2,lengthn).T
+    #plus_one = pca_reconstruct(np.array([[0,0,0,0,0,0,0,0,0]]),mean, eigenvecs).reshape(2,lengthn).T
+    #draw.draw_aligned_contours(img,plus_one)
+    draw.draw_aligned_contours(img,plus_one)
+    
+    cv2.namedWindow('image',cv2.WINDOW_NORMAL)
+    height, width, _ = img.shape;
+    cv2.resizeWindow('image', width, height)
+    cv2.imshow('image',img);
+    
     # Dental radiograph inladen
     #img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
     

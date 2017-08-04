@@ -3,13 +3,17 @@ import cv2
 import numpy as np
 
 def apply_filter_train(image):
+    #Apply mediam bilateral filter
     image1 = cv2.medianBlur(image,9)
     image2 = cv2.bilateralFilter(image1,9,175,175)
     kernel = np.ones((100,100),np.uint8)
+    #Apply tophat transform
     image3 = cv2.add(image2, cv2.morphologyEx(image2,cv2.MORPH_TOPHAT,kernel))
     kernel = np.ones((25,25),np.uint8)
+    #Apply bottomhat transform
     image4 = cv2.subtract(image3, cv2.morphologyEx(image2,cv2.MORPH_BLACKHAT,kernel))
     clahe = cv2.createCLAHE(clipLimit=2.0,tileGridSize=(16,16))
+    #Apply CLAHE
     image5 = clahe.apply(image4)
     
     return image5
