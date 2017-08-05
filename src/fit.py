@@ -12,15 +12,16 @@ import draw as draw; reload(draw)
 def fit(imgtf, mean, eigvs, edgeimgs, k):
     #print mean.shape
     m = 2*k
-    enh_imgtf = pp.apply_filter_train(imgtf)
+    #enh_imgtf = pp.apply_filter_train(imgtf)
+    enh_imgtf = imgtf
     #grad_imgi = pp.apply_sobel(grad_imgi)
     
     normalvectors = gl.get_normals(mean)
-    normalvectors = normalvectors
-    
-    approx = np.copy(mean)
+    normalvectors = np.reshape(normalvectors,(normalvectors.size / 2, 2),'F')
+    newmean = np.reshape(mean,(mean.size / 2, 2),'F')
+    approx = np.copy(newmean)
     # Voor ieder punt
-    for i in range(lm.lengthn):
+    for i in range(mean.size / 2):
         # Bereken stat model
         slicel = gl.get_slice_indices(approx[i],normalvectors[i],k)
         pmean, pcov = gl.get_statistical_model(edgeimgs,slicel,k)
@@ -60,7 +61,8 @@ def match_model_to_target(newpoints, model, eigenvecs):
     return None    
     
 if __name__ == '__main__':
-    wollah = io.get_img(1)
+    owollah = io.get_img(1)
+    wollah = io.get_enhanced_img(1)
     imges = io.get_all_enhanced_img(1)
     marks = io.read_all_landmarks_by_orientation(0)
     lms,_ = lm.procrustes(marks)
@@ -68,8 +70,12 @@ if __name__ == '__main__':
 #    mean = mean.reshape(2,160).T
     tx, ty, s, r = init.get_initial_transformation(wollah,mean,0)
     transformedmean = lm.transform_shape(mean,tx,ty,s,r)
-    draw.draw_contour(wollah,transformedmean)
-    io.show_on_screen_greyscale(wollah,2)
+    points = fit(wollah, transformedmean, eigenvecs, imges, 2)
+    draw.draw_contour(owollah,points)
+    io.show_on_screen_greyscale(owollah,2)
+    
+    #draw.draw_contour(wollah,transformedmean)
+    #io.show_on_screen_greyscale(wollah,2)
     #lss = draw_initial_landmarks_orient(img_to_fit,[mean],0)
     
     #singlemark = np.reshape(marks[:,0],(marks[:,0].size,1))
