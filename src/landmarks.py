@@ -3,11 +3,22 @@ import cv2
 import numpy as np
 from numpy import linalg as LA
 import math
-import draw; reload(draw)
-import greylevel as gl; reload(gl)
 
 
 lengthn = 160
+
+#Transform a shape x with a scale factor s, rotation factor theta and translation t
+def transform_shape(x,tx=0, ty=0, s=1, theta=0):
+    x = np.reshape(x,(x.size / 2, 2),'F').flatten()
+    srm = np.array([[s * np.cos(theta), -s * np.sin(theta)], [s * np.sin(theta), s * np.cos(theta)]])
+    for k in range(0,len(x),2):
+        nr = np.dot(srm,[x[k],x[k+1]])
+        x[k] = nr[0] + tx
+        x[k+1] = nr[1] + ty
+    x = np.reshape(x,(x.size / 2, 2))
+    x = np.reshape(x,(x.size, 1),'F')
+    return x
+    
 
 # Aligns a list of shapes on the first element of that list. 
 # Returns the collection of aligned shapes and the mean shape.
@@ -23,7 +34,6 @@ def procrustes(ls):
     mean = x0
 
     while True:
-        print "ITERATION"
         # Align all landmarks with mean
         ls = ls.T
         for i in range(0,len(ls[:,0])) :
@@ -88,9 +98,9 @@ def estimate_mean(ls):
     
 
 #Aligns shape x1 to x2
-def align(x1,x2):
-    x1 = np.reshape(x1,(x1.size / 2, 2),'F').flatten()
-    x2 = np.reshape(x2,(x2.size / 2, 2),'F').flatten()
+def align(x1o,x2o):
+    x1 = np.reshape(x1o,(x1o.size / 2, 2),'F').flatten()
+    x2 = np.reshape(x2o,(x2o.size / 2, 2),'F').flatten()
     x1norm2 = np.dot(x1,x1)
     a = np.dot(x1,x2) / x1norm2
     b = 0
@@ -99,16 +109,10 @@ def align(x1,x2):
     b /= x1norm2
     s = math.sqrt(a * a + b * b)
     theta = np.arctan(b/a)
-    srm = np.array([[s * np.cos(theta), -s * np.sin(theta)], [s * np.sin(theta), s * np.cos(theta)]])
-    for k in range(0,len(x1),2):
-        nr = np.dot(srm,[x1[k],x1[k+1]])
-        x1[k] = nr[0]
-        x1[k+1] = nr[1]
-    x1 = np.reshape(x1,(x1.size / 2, 2))
-    x1 = np.reshape(x1,(x1.size, 1),'F')
-    return x1
+    alignedx1 = transform_shape(x1o,0,0,s,theta)
+    return alignedx1
    
-#Aligns shape x1 to x2, X
+#Gets the alignment parameters to align shape x1 to x2
 def get_align_params(x1o,x2o):
     x1c = extract_centroid(x1o)
     x2c = extract_centroid(x2o)
@@ -126,12 +130,7 @@ def get_align_params(x1o,x2o):
     b /= x1norm2
     s = math.sqrt(a * a + b * b)
     theta = np.arctan(b/a)
-    srm = np.array([[s * np.cos(theta), -s * np.sin(theta)], [s * np.sin(theta), s * np.cos(theta)]])
-    for k in range(0,len(x1),2):
-        nr = np.dot(srm,[x1[k],x1[k+1]])
-        x1[k] = nr[0]
-        x1[k+1] = nr[1]
-    
+        
     return t, s, theta
 
 #TODO deprecated
@@ -221,17 +220,22 @@ def get_num_eigenvecs_needed(eigenvals):
          #   return num
     return num
     
-if __name__ == '__main__':
-    marks = io.read_all_landmarks_by_orientation(0)
-    normies = gl.get_normals(np.reshape(marks[:,0],(marks[:,0].size,1)))
+#if __name__ == '__main__':
+    #marks = io.read_all_landmarks_by_tooth(0)
+    #img = io.get_objectspace_img()
+    #[lm,mn] = procrustes(marks)
+    #draw.draw_aligned_contours(img,lm)
+    #io.show_on_screen(img)
+    
+    #normies = gl.get_normals(np.reshape(marks[:,0],(marks[:,0].size,1)))
     # Lege witte image maken voor procrustes afbeelding
     #img = np.zeros((512,512,3), np.uint8)
     #img[:] = (255, 255, 255)
-    img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
+    #img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
     
     
-    draw.draw_all_contours(img, np.reshape(marks[:,0],(marks[:,0].size,1)))
-    draw.draw_normals(img, np.reshape(marks[:,0],(marks[:,0].size,1)), normies)
+    #draw.draw_all_contours(img, np.reshape(marks[:,0],(marks[:,0].size,1)))
+    #draw.draw_normals(img, np.reshape(marks[:,0],(marks[:,0].size,1)), normies)
     #[lm,mn] = procrustes(marks)
     #mean, eigenvecs, eigenvals, lm_reduced = pca_reduce(lm,9)
     
@@ -281,5 +285,3 @@ if __name__ == '__main__':
     # cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     # height, width, _ = img.shape;
     # cv2.resizeWindow('image', width / 2, height /2)
-
-    

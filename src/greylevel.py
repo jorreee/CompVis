@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import landmarks as lm
-   
+
+# Returns the normals n = (nx0, nx1, ..., ny0, ny1, ...)^T of a list of landmarks x = (x0, x1, ..., y0, y1, ...)^T  
 def get_normals(pointlist):
     half = pointlist.size/2
     pointlist = np.reshape(pointlist,(half,2),'F')
@@ -30,7 +31,8 @@ def get_normals(pointlist):
     normals = np.reshape(normals,(normals.size, 1),'F')    
     return normals
     
-
+# Gets the slice indices starting from the point along k pixels in the direction of nv. 
+# Point and nv are represented as (x,y).
 def get_single_slice_side(point, nv, k):    
     a = np.array(point)
     b = np.array(point + nv*k)
@@ -39,9 +41,13 @@ def get_single_slice_side(point, nv, k):
     coordinates = coordinates.astype(np.int)
     
     return coordinates
-    
-def get_slice_indices(point,nv, k):    
-    up = get_single_slice_side(point,nv,k)
+
+# Gets the slice indices in both directions starting from the point along k pixels in the direction of -nv and k +1 pixels in the direction of nv (for gradients) 
+# Point and nv are represented as (x,y).
+# Returns an array with the shape of (2,2(k + 1)), due to the gradient needing one extra pixel  
+def get_slice_indices(point,nv, k): 
+    # One extra in the up direction for gradient   
+    up = get_single_slice_side(point,nv,k + 1)
     
     down = get_single_slice_side(point, -1*nv,k)
     down = np.delete(down,0,1)
@@ -50,15 +56,26 @@ def get_slice_indices(point,nv, k):
     tot = np.concatenate((down,up),1)
     
     return tot
-    
+
+# Gets the gradient of the grey values of an image along the slice provided by the 2(k + 1) coordinates
+# Returns 2k + 1 gradients
 def slice_image(coords,img):
     r, c = coords.shape
     values = np.ones(c)
     for i in range(c):
         values[i] = img[coords[0,i],coords[1,i]]
-    
-    return lm.normalize(values)
-    
+    gradients = get_gradients(values)
+    return lm.normalize_shape(gradients)
+
+# Returns the gradients of the grey values along a slice provided by the 2(k + 1) greyvals
+# Returns 2k + 1 gradients
+def get_gradients(greyvals):
+    values = np.ones(greyvals.size - 1)
+    for i in range(values.size):
+        values[i] = greyvals[i + 1] - greyvals[i]
+    return values
+
+# Gets the grey level statistical model for the slice provided by the coordinates    
 def get_statistical_model(imgs,coords,k):
     gradvals = np.array([])
     numel = len(imgs)

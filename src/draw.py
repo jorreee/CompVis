@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import cv2
 import numpy as np
+import landmarks as lms
 
 lengthn = 160
 # Takes a column vector and interprets it as all x coordinates followed by all y coordinates, then draws a line between the points on the given image
@@ -31,12 +32,9 @@ def draw_all_contours(img,ls):
         draw_contour(img,lm.T)
     return None
 
-# Transform an object present in object space to make it visible in an image (not a radiograph)	
+# Transform an object present in object space to make it visible in the object space image	
 def make_object_space_visible(ls):
-    lss = np.copy(ls)
-    for i in range(0,lss.size):
-        lss[i,0] = lss[i,0] * 1003 + 250
-    return lss
+    return lms.transform_shape(ls,250,250,1003,0)
 
 # Takes a matrix with aligned landmarks as column. Applies a scaling and translation transformation to them to be visible in an image and then draws the transformed landmarks on the given image
 def draw_aligned_contours(img,ls):
@@ -58,6 +56,18 @@ def draw_normals(img,lpts,norms):
                 (int(float(lpts[ind,0])),int(float(lpts[ind,1]))),
                 (   int(float(norms[ind,0] + lpts[ind,0])),
                     int(float(norms[ind,1] + lpts[ind,1]))),
+                (255,0,0),
+                2);
+    
+    return None
+
+# Draws the jaw separation on an image   
+def draw_jaw_separation(img,yval):
+    for ind in range(len(img[1,:]) - 1):
+        cv2.line(img,
+                (ind,int(yval)),
+                ((ind + 1),
+                (int(yval))),
                 (255,0,0),
                 2);
     

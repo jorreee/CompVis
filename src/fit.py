@@ -6,46 +6,8 @@ import preprocess as pp
 import scipy.spatial.distance as scp
 import greylevel as gl; reload(gl)
 import io as io; reload(io)
-    
-def draw_initial_landmarks(img,ls):
-    lss = ls
-    scalen = 900
-    tx = 360
-    ty = 310
-    for el in lss:
-        for i in range(0,len(el)):
-            el[i,0] = el[i,0] * scalen * np.sqrt(lm.lengthn/40) + tx
-            el[i,1] = el[i,1] * scalen * np.sqrt(lm.lengthn/40) + ty
-    for i in range(len(lss)):
-        if i == 0:
-            lm.draw_landmark(img,lss[i],color=(0,0,0),thicc=2)
-        else:
-            lm.draw_landmark(img,lss[i],color=(200,200,0),thicc=2)
-    return lss
-    
-def draw_initial_landmarks_orient(img,ls,orient):
-    sep = get_jaw_separation(img)
-    lss = np.copy(ls)
-    scalefactor = 900
-    scalen = scalefactor * np.sqrt(lm.lengthn/40)
-    if orient == 0:
-        ty = sep + (scalen * np.min(lss[0],0))[1]
-    elif orient == 1:
-        ty = sep - (scalen * np.min(lss[0],0))[1]
-    else:
-        print "Only up and down are supported as of yet."
-    tx = 360
-    for el in lss:
-        for i in range(0,len(el)):
-            el[i,0] = el[i,0] * scalen + tx
-            el[i,1] = el[i,1] * scalen + ty
-    for i in range(len(lss)):
-        if i == 0:
-            lm.draw_landmark(img,lss[i],color=(0,0,0),thicc=2)
-        else:
-            lm.draw_landmark(img,lss[i],color=(200,200,0),thicc=2)
-    
-    return lss[0]
+import init as init; reload(init)
+import draw as draw; reload(draw)
     
 def fit(imgtf, mean, eigvs, edgeimgs, k):
     #print mean.shape
@@ -80,24 +42,6 @@ def fit(imgtf, mean, eigvs, edgeimgs, k):
     return approx
     
 
-def get_jaw_separation(img):
-    smallerimg = img[250:650,:]
-    means = []
-    for i in range(len(smallerimg[:,1])):
-        means.append(np.mean(smallerimg[i,:]))
-    
-    return np.argmin(means) + 250
-
-def draw_jaw_separation(img,yval):
-    for ind in range(len(img[1,:]) - 1):
-        cv2.line(img,
-                (ind,int(yval)),
-                ((ind + 1),
-                (int(yval))),
-                (255,0,0),
-                2);
-    
-    return None
     
 def match_model_to_target(newpoints, model, eigenvecs):
     #1. 
@@ -117,12 +61,23 @@ def match_model_to_target(newpoints, model, eigenvecs):
     
 if __name__ == '__main__':
     wollah = io.get_img(1)
+    imges = io.get_all_enhanced_img(1)
     marks = io.read_all_landmarks_by_orientation(0)
-    normies = gl.get_normals(np.reshape(marks[:,0],(marks[:,0].size,1)))
+    lms,_ = lm.procrustes(marks)
+    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms,9)
+#    mean = mean.reshape(2,160).T
+    tx, ty, s, r = init.get_initial_transformation(wollah,mean,0)
+    transformedmean = lm.transform_shape(mean,tx,ty,s,r)
+    draw.draw_contour(wollah,transformedmean)
+    io.show_on_screen_greyscale(wollah,2)
+    #lss = draw_initial_landmarks_orient(img_to_fit,[mean],0)
     
-    slice = gl.get_slice_indices(np.reshape(marks[:,0],(marks[:,0].size,1)),normies,5)
-    print slice.shape
-    
+    #singlemark = np.reshape(marks[:,0],(marks[:,0].size,1))
+    normies = gl.get_normals(transformedmean)
+    half = transformedmean.size /2
+    ##print (normies[0,0],normies[half,0])
+    sliceu = gl.get_slice_indices(np.array([transformedmean[0,0],transformedmean[half,0]]),np.array([normies[0,0],normies[half,0]]),5)
+    pmean, pcov = gl.get_statistical_model(imges,sliceu,5)
     #all_edge_imgs = io.get_all_enhanced_img(1)
     
     

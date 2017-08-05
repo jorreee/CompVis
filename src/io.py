@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 import cv2
 import numpy as np
+import preprocess as pp
 
 def show_on_screen(img,scale=1):
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     height, width, _ = img.shape;
+    cv2.resizeWindow('image', width / scale, height / scale)
+    cv2.imshow('image',img);
+    
+def show_on_screen_greyscale(img,scale=1):
+    cv2.namedWindow('image',cv2.WINDOW_NORMAL)
+    height, width = img.shape;
     cv2.resizeWindow('image', width / scale, height / scale)
     cv2.imshow('image',img);
 
@@ -23,15 +30,18 @@ def get_img(i):
     
     return img
     
+def get_enhanced_img(i):
+    imgi = get_img(i)
+    imgi = pp.apply_filter_train(imgi)
+    return imgi
+    
 def get_all_enhanced_img(excepti=-1):
     edges = np.array([])
     for i in range(14):
         if (i+1 == excepti):
             continue
         else:
-            imgi = get_img(i+1)
-            imgi = pp.apply_filter_train(imgi)
-            imgi = pp.apply_sobel(imgi)
+            imgi = get_enhanced_img(i+1)
             if(len(edges) == 0):
                 edges = np.asarray(imgi)
             else:
@@ -113,12 +123,14 @@ def read_all_landmarks_by_tooth(toothi):
 #     (..., ..., ..., ...)
 #
 # number of rows is a multiple of 80 (80 coordinates per landmark file)
-def read_all_landmarks_by_orientation(toothies):
+def read_all_landmarks_by_orientation(toothies, excepti=-1):
     ls = []
     #for l in range(28):
      #   ls.append([])
     
     for i in range(28):
+        if (i+1 == excepti):
+            continue
         imgteeth = read_all_landmarks_by_img(i + 1)
         half = imgteeth.size / 2
         orientsplit = half / 2
