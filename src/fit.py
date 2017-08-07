@@ -43,14 +43,35 @@ def find_new_points(imgtf, shapeo, edgeimgs, k):
     return shape
     
 def fit(imgtf, mean, eigvs, edgeimgs, k, orient):
+    conv_thresh = 0.0001 
     itx, ity, isc, itheta = init.get_initial_transformation(imgtf,mean,orient)
     shape = lm.transform_shape(mean,itx,ity,isc,itheta)
+    first = shape
+    b = tx = ty = theta = 0
+    s = 1
     for i in range(50):
+    #while True:
         approx = find_new_points(imgtf, shape, edgeimgs, k)
+        lb = b
+        ltx = tx
+        lty = ty
+        ls = s
+        ltheta = theta
         b, tx, ty, s, theta = match_model_to_target(approx, mean, eigenvecs)
         shape = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
+        if ((b - lb < conv_thresh).all() and tx - ltx < conv_thresh and 
+            ty - lty < conv_thresh and s - ls < conv_thresh and theta - ltheta < conv_thresh):
+            break;
     
-    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
+    result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
+    
+    colimgtf = io.greyscale_to_colour(imgtf)
+    #draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
+    #draw.draw_contour(colimgtf,approx,color=(0,0,255), thicc=1)
+    draw.draw_contour(colimgtf,result, thicc=1)
+    io.show_on_screen(colimgtf,1)
+    
+    return result
 
 # Does not work robustly?     
 def is_singular(matrix):
@@ -105,12 +126,17 @@ if __name__ == '__main__':
     marks = io.read_all_landmarks_by_orientation(0)
     lms,_ = lm.procrustes(marks)
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms,9)
-    points = fit(wollah, mean, eigenvecs, imges, 2, 0)
-    owollah = io.greyscale_to_colour(owollah)
-    tx, ty, s, r = init.get_initial_transformation(wollah,mean,0)
-    transformedmean = lm.transform_shape(mean,tx,ty,s,r)
-    draw.draw_contour(owollah,points, thicc=2)
-    io.show_on_screen(owollah,2)
+    points = fit(wollah, mean, eigenvecs, imges, 5, 0)
+    
+    #owollah = io.greyscale_to_colour(owollah)
+    #tx, ty, s, r = init.get_initial_transformation(wollah,mean,0)
+    #transformedmean = lm.transform_shape(mean,tx,ty,s,r)
+    #draw.draw_contour(owollah,points, thicc=2)
+    #io.show_on_screen(owollah,2)
+    
+    
+    
+    
     
     #draw.draw_contour(wollah,transformedmean)
     #io.show_on_screen_greyscale(wollah,2)
