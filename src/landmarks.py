@@ -8,13 +8,30 @@ import math
 lengthn = 160
 
 #Transform a shape x with a scale factor s, rotation factor theta and translation t
-def transform_shape(x,tx=0, ty=0, s=1, theta=0):
+def transform_shape(xo,tx=0, ty=0, s=1, theta=0):
+    x = np.copy(xo)
     x = np.reshape(x,(x.size / 2, 2),'F').flatten()
     srm = np.array([[s * np.cos(theta), -s * np.sin(theta)], [s * np.sin(theta), s * np.cos(theta)]])
     for k in range(0,len(x),2):
         nr = np.dot(srm,[x[k],x[k+1]])
         x[k] = nr[0] + tx
         x[k+1] = nr[1] + ty
+    x = np.reshape(x,(x.size / 2, 2))
+    x = np.reshape(x,(x.size, 1),'F')
+    return x
+    
+#Inverse transform a shape x with a scale factor s, rotation factor theta and translation t
+def transform_shape_inv(xo,tx=0, ty=0, s=1, theta=0):
+    x = np.copy(xo)
+    x = np.reshape(x,(x.size / 2, 2),'F').flatten()
+    srm = np.array([[s * np.cos(theta), -s * np.sin(theta)], [s * np.sin(theta), s * np.cos(theta)]])
+    srm = LA.inv(srm)
+    for k in range(0,len(x),2):
+        x[k] = x[k] - tx
+        x[k+1] = x[k+1] - ty
+        nr = np.dot(srm,[x[k],x[k+1]])
+        x[k] = nr[0]
+        x[k+1] = nr[1]
     x = np.reshape(x,(x.size / 2, 2))
     x = np.reshape(x,(x.size, 1),'F')
     return x
@@ -113,14 +130,16 @@ def align(x1o,x2o):
     return alignedx1
    
 #Gets the alignment parameters to align shape x1 to x2
-def get_align_params(x1o,x2o):
-    x1c = extract_centroid(x1o)
-    x2c = extract_centroid(x2o)
+def get_align_params(x1,x2):
+    x1c = extract_centroid(x1)
+    x2c = extract_centroid(x2)
     
     t = x2c - x1c
     
-    x1 = center_orig(x1o).flatten()
-    x2 = center_orig(x2o).flatten()
+    x1 = center_orig(x1)
+    x2 = center_orig(x2)
+    x1 = np.reshape(x1,(x1.size / 2, 2),'F').flatten()
+    x2 = np.reshape(x2,(x2.size / 2, 2),'F').flatten()   
     
     x1norm2 = np.dot(x1,x1)
     a = np.dot(x1,x2) / x1norm2
@@ -131,7 +150,7 @@ def get_align_params(x1o,x2o):
     s = math.sqrt(a * a + b * b)
     theta = np.arctan(b/a)
         
-    return t, s, theta
+    return t[0,0],t[1,0], s, theta
 
 #TODO deprecated
 def convert_landmarklist_to_np(lms):

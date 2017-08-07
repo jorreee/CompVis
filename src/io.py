@@ -14,6 +14,9 @@ def show_on_screen_greyscale(img,scale=1):
     height, width = img.shape;
     cv2.resizeWindow('image', width / scale, height / scale)
     cv2.imshow('image',img);
+    
+def greyscale_to_colour(img):
+    return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
 def get_objectspace_img():
     img = np.zeros((512,512,3), np.uint8)
