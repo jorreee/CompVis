@@ -136,10 +136,10 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    wollah = io.get_enhanced_img(7)
+    wollah = io.get_enhanced_img(1)
     imges = io.get_all_gradient_img(1)
-    marks = io.read_all_landmarks_by_orientation(1)
-    points = fit(wollah, imges, marks, 10, 1)
+    marks = io.read_all_landmarks_by_orientation(0)
+    points = fit(wollah, imges, marks, 10, 0)
     
     #owollah = io.greyscale_to_colour(owollah)
     #tx, ty, s, r = init.get_initial_transformation(wollah,mean,0)

@@ -58,7 +58,7 @@ def get_initial_transformation(img,meanlm,orient):
     elif orient == 1:
         scalefactor = 750
         scale = scalefactor * np.sqrt(meanlm.size/80)
-        ty = lower - scale * np.min(meanlm[half:]) - 10
+        ty = lower - scale * np.min(meanlm[half:])
         tx = 350 + get_centralisation(img,lower)
         rot = 0.08
     else:
