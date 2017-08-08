@@ -36,27 +36,30 @@ def find_new_points(imgtf, shapeo, edgeimgs, k):
             #    dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)],pmean,LA.pinv(pcov))
             #else:
             #    dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)],pmean,LA.inv(pcov))               
+        #dist[k] = 0.85 * dist[k]
         min_ind = np.argmin(dist)
         new_point = slices[:,min_ind+k]
         shape[i] = new_point
     shape = np.reshape(shape,(shape.size, 1),'F')  
     return shape
-    
-def fit(imgtf, edgeimgs, marks , k, orient):
+
+# Imgtf is enhanced image, edgeimgs are gradient images    
+def fit(enhimgtf, edgeimgs, marks , k, orient):
     conv_thresh = 0.0001 
     
     lms,_ = lm.procrustes(marks)
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms,8)
     stdvar = np.std(lm_reduced, axis=1)
     
-    itx, ity, isc, itheta = init.get_initial_transformation(imgtf,mean,orient)
+    itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
     shape = lm.transform_shape(mean,itx,ity,isc,itheta)
     first = shape
     
+    imgtf = pp.apply_sobel(enhimgtf)
     b = tx = ty = theta = 0
     s = 1
     colimgtf = io.greyscale_to_colour(imgtf)
-    for i in range(100):
+    for i in range(1):
     #while True:
         approx = find_new_points(imgtf, shape, edgeimgs, k)
         lb = b
@@ -76,10 +79,10 @@ def fit(imgtf, edgeimgs, marks , k, orient):
     result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
     
     colimgtf = io.greyscale_to_colour(imgtf)
-    draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
+    #draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
     #draw.draw_contour(colimgtf,approx,color=(0,0,255), thicc=1)
-    draw.draw_contour(colimgtf,result, thicc=1)
-    io.show_on_screen(colimgtf,1)
+    #draw.draw_contour(colimgtf,result, thicc=1)
+    #io.show_on_screen(colimgtf,1)
     
     return result
 
@@ -130,11 +133,10 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    owollah = io.get_img(1)
-    wollah = io.get_enhanced_img(1)
-    imges = io.get_all_enhanced_img(1)
+    wollah = io.get_enhanced_img(12)
+    imges = io.get_all_gradient_img(1)
     marks = io.read_all_landmarks_by_orientation(0)
-    points = fit(wollah, imges, marks, 5, 0)
+    points = fit(wollah, imges, marks, 10, 0)
     
     #owollah = io.greyscale_to_colour(owollah)
     #tx, ty, s, r = init.get_initial_transformation(wollah,mean,0)

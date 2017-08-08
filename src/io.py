@@ -33,19 +33,24 @@ def get_img(i):
     
     return img
     
-def get_enhanced_img(i):
+def get_gradient_img(i):
     imgi = get_img(i)
     imgi = pp.apply_filter_train(imgi)
     imgi = pp.apply_sobel(imgi)
     return imgi
     
-def get_all_enhanced_img(excepti=-1):
+def get_enhanced_img(i):
+    imgi = get_img(i)
+    imgi = pp.apply_filter_train(imgi)
+    return imgi
+    
+def get_all_gradient_img(excepti=-1):
     edges = np.array([])
     for i in range(14):
         if (i+1 == excepti):
             continue
         else:
-            imgi = get_enhanced_img(i+1)
+            imgi = get_gradient_img(i+1)
             if(len(edges) == 0):
                 edges = np.asarray(imgi)
             else:

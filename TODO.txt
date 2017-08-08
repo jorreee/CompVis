@@ -25,3 +25,6 @@ Code hergebruik overview:
 - Draw methodes: horrible, needs refactoring
 - Grey level model: op gradient richting na in orde?
 - Initial position: 
+
+
+- Gauss klok over grey level model?
