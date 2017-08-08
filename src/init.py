@@ -26,22 +26,22 @@ def get_jaw_separation(img):
 def get_centralisation(img, yval):
     start = 300
     eind = 401
-    #start = 100
-    #eind = 601
     
-    reepje = img[yval,start:eind]
-    #draw.vec2graph(reepje)
+    reepje = np.copy(img[yval,start:eind])
     reepgrad = gl.get_gradients_raw(np.asarray(reepje))
-    #draw.vec2graph(reepgrad)
     
     # Geef voorrang aan pieken dicht bij het centrum
     mid = (eind-start) / 2
     for i in range(mid):
+        reepje[i] *= 0.75 + 0.25*(float(mid-i)/mid)
+        reepje[mid + i] *= 0.75 + 0.25*(float(i)/mid)
         reepgrad[i] *= (float(i)/mid)
         reepgrad[mid + i] *= (float(mid-i)/mid)
+    #draw.vec2graph(reepje)
     #draw.vec2graph(reepgrad)
     
-    x_offset = np.argmax(reepgrad) - mid
+    #x_offset = np.argmax(reepgrad) - mid
+    x_offset = np.argmin(reepje) - mid
     
     print x_offset
     return x_offset
