@@ -77,8 +77,11 @@ def fit(enhimgtf, edgeimgs, marks , k, orient):
             break;
     
     result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
-    
+    print marks.shape
+    ground = np.reshape(marks[:,12],(marks[:,12].size,1))
+    ground = lm.transform_shape(ground,-1150,-500,1,0)
     colimgtf = io.greyscale_to_colour(imgtf)
+    draw.draw_contour(colimgtf,ground,color=(0,0,255), thicc=1)
     draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
     #draw.draw_contour(colimgtf,approx,color=(0,0,255), thicc=1)
     draw.draw_contour(colimgtf,result, thicc=1)
@@ -135,7 +138,7 @@ def match_model_to_target(Y, xbar, P):
 if __name__ == '__main__':
     wollah = io.get_enhanced_img(13)
     imges = io.get_all_gradient_img(1)
-    marks = io.read_all_landmarks_by_orientation(0,1)
+    marks = io.read_all_landmarks_by_orientation(0)
     points = fit(wollah, imges, marks, 10, 0)
     
     #owollah = io.greyscale_to_colour(owollah)

@@ -36,8 +36,8 @@ def get_initial_transformation(img,meanlm,orient):
     scalefactor = 900
     scale = scalefactor * np.sqrt(meanlm.size/80)
     rot = 0
-    tx = 360
-    #tx = 390
+    tx = 340
+    #tx = 360
     if orient == 0:
         ty = upper + scale * np.min(meanlm[half:])
     elif orient == 1:
