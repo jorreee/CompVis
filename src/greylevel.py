@@ -46,8 +46,9 @@ def get_single_slice_side(point, nv, k):
 # Point and nv are represented as (x,y).
 # Returns an array with the shape of (2,2(k + 1)), due to the gradient needing one extra pixel  
 def get_slice_indices(point,nv, k): 
-    # One extra in the up direction for gradient   
-    up = get_single_slice_side(point,nv,k + 1)
+    # One extra in the up direction for gradient 
+    up = get_single_slice_side(point,nv,k)  
+    #up = get_single_slice_side(point,nv,k + 1)
     
     down = get_single_slice_side(point, -1*nv,k)
     down = np.delete(down,0,1)
@@ -63,16 +64,17 @@ def slice_image(coords,img):
     r, c = coords.shape
     values = np.ones(c)
     for i in range(c):
-        values[i] = img[coords[0,i],coords[1,i]]
-    gradients = get_gradients(values)
+        values[i] = img[coords[1,i],coords[0,i]]
+    #gradients = get_gradients(values)
+    gradients = values
     return lm.normalize_shape(gradients)
-
+    
 # Returns the gradients of the grey values along a slice provided by the 2(k + 1) greyvals
 # Returns 2k + 1 gradients
 def get_gradients(greyvals):
     values = np.ones(greyvals.size - 1)
     for i in range(values.size):
-        values[i] = greyvals[i + 1] - greyvals[i]
+        values[i] = abs(greyvals[i + 1] - greyvals[i])
     return values
 
 # Gets the grey level statistical model for the slice provided by the coordinates    

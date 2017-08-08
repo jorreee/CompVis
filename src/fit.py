@@ -42,14 +42,21 @@ def find_new_points(imgtf, shapeo, edgeimgs, k):
     shape = np.reshape(shape,(shape.size, 1),'F')  
     return shape
     
-def fit(imgtf, mean, eigvs, edgeimgs, k, orient):
+def fit(imgtf, edgeimgs, marks , k, orient):
     conv_thresh = 0.0001 
+    
+    lms,_ = lm.procrustes(marks)
+    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms,8)
+    stdvar = np.std(lm_reduced, axis=1)
+    
     itx, ity, isc, itheta = init.get_initial_transformation(imgtf,mean,orient)
     shape = lm.transform_shape(mean,itx,ity,isc,itheta)
     first = shape
+    
     b = tx = ty = theta = 0
     s = 1
-    for i in range(50):
+    colimgtf = io.greyscale_to_colour(imgtf)
+    for i in range(100):
     #while True:
         approx = find_new_points(imgtf, shape, edgeimgs, k)
         lb = b
@@ -58,6 +65,9 @@ def fit(imgtf, mean, eigvs, edgeimgs, k, orient):
         ls = s
         ltheta = theta
         b, tx, ty, s, theta = match_model_to_target(approx, mean, eigenvecs)
+        #Check for plausible shapes
+        for i in range(b.size):
+            b[i] = max(min(b[i],3*stdvar[i]),-3*stdvar[i])
         shape = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
         if ((b - lb < conv_thresh).all() and tx - ltx < conv_thresh and 
             ty - lty < conv_thresh and s - ls < conv_thresh and theta - ltheta < conv_thresh):
@@ -66,7 +76,7 @@ def fit(imgtf, mean, eigvs, edgeimgs, k, orient):
     result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
     
     colimgtf = io.greyscale_to_colour(imgtf)
-    #draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
+    draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
     #draw.draw_contour(colimgtf,approx,color=(0,0,255), thicc=1)
     draw.draw_contour(colimgtf,result, thicc=1)
     io.show_on_screen(colimgtf,1)
@@ -124,9 +134,7 @@ if __name__ == '__main__':
     wollah = io.get_enhanced_img(1)
     imges = io.get_all_enhanced_img(1)
     marks = io.read_all_landmarks_by_orientation(0)
-    lms,_ = lm.procrustes(marks)
-    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms,9)
-    points = fit(wollah, mean, eigenvecs, imges, 5, 0)
+    points = fit(wollah, imges, marks, 5, 0)
     
     #owollah = io.greyscale_to_colour(owollah)
     #tx, ty, s, r = init.get_initial_transformation(wollah,mean,0)

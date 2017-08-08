@@ -36,6 +36,7 @@ def get_img(i):
 def get_enhanced_img(i):
     imgi = get_img(i)
     imgi = pp.apply_filter_train(imgi)
+    imgi = pp.apply_sobel(imgi)
     return imgi
     
 def get_all_enhanced_img(excepti=-1):

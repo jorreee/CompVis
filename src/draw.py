@@ -60,6 +60,13 @@ def draw_normals(img,lpts,norms):
                 2);
     
     return None
+    
+def draw_slice(img,slicel):
+    print slicel[0,1]
+    for i in range(slicel.size / 2):
+        img[slicel[1,i],slicel[0,i]] = 255
+    
+    return None
 
 # Draws the jaw separation on an image   
 def draw_jaw_separation(img,yval):
