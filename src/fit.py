@@ -133,7 +133,7 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    wollah = io.get_enhanced_img(9)
+    wollah = io.get_enhanced_img(11)
     imges = io.get_all_gradient_img(1)
     marks = io.read_all_landmarks_by_orientation(0)
     points = fit(wollah, imges, marks, 10, 0)
