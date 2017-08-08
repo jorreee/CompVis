@@ -19,12 +19,6 @@ def get_jaw_separation(img):
     gradlower = gl.get_gradients(np.array(lower))
     uppery = np.argmax(gradupper)
     lowery = np.argmax(gradlower)
-    get_centralisation(img,uppery)
-    #draw.draw_jaw_separation(smallerimg,uppery + sep-50)
-    #draw.draw_jaw_separation(smallerimg,sep)
-    #draw.draw_jaw_separation(smallerimg,lowery + sep)
-    #colimgtf = io.greyscale_to_colour(smallerimg)
-    #io.show_on_screen(colimgtf,1)
     upperyf = uppery + sep-50 + 250
     loweryf = lowery + sep + 250
     return upperyf, loweryf
@@ -32,9 +26,10 @@ def get_jaw_separation(img):
 def get_centralisation(img, yval):
     start = 100
     eind = 601
-    smallerimg = img[250:650,start:eind]
+    smallerimg = img[:,start:eind]
     
     reepje = smallerimg[yval,:]
+    draw.vec2graph(reepje)
     reepgrad = gl.get_gradients_raw(np.asarray(reepje))
     #draw.vec2graph(reepgrad)
     
@@ -43,10 +38,11 @@ def get_centralisation(img, yval):
     for i in range(mid):
         reepgrad[i] *= (float(i)/mid)
         reepgrad[mid + i] *= (float(mid-i)/mid)
-    #draw.vec2graph(reepgrad)
+    draw.vec2graph(reepgrad)
     
     x_offset = np.argmax(reepgrad) - mid
-    
+    draw.draw_jaw_separation(img,yval)
+    print x_offset
     return x_offset
 
 # Gets the initial pose transformation to apply to the mean shape to start the ASM algorithm    
@@ -59,7 +55,7 @@ def get_initial_transformation(img,meanlm,orient):
     rot = 0
     if orient == 0:
         ty = upper + scale * np.min(meanlm[half:])
-        tx = 350 + get_centralisation(img,upper)
+        tx = 350 + get_centralisation(img,upper-10)
     elif orient == 1:
         ty = lower - scale * np.min(meanlm[half:])
         tx = 350 + get_centralisation(img,lower)
