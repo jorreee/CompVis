@@ -59,7 +59,7 @@ def fit(enhimgtf, edgeimgs, marks , k, orient):
     b = tx = ty = theta = 0
     s = 1
     colimgtf = io.greyscale_to_colour(imgtf)
-    for i in range(30):
+    for i in range(60):
     #while True:
         approx = find_new_points(imgtf, shape, edgeimgs, k)
         lb = b
@@ -136,7 +136,7 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    wollah = io.get_enhanced_img(13)
+    wollah = io.get_enhanced_img(5)
     imges = io.get_all_gradient_img(1)
     marks = io.read_all_landmarks_by_orientation(0)
     points = fit(wollah, imges, marks, 10, 0)

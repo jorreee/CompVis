@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-import cv2
+import cv2 as cv2
 import numpy as np
 import landmarks as lms
+import matplotlib.pyplot as plt
 
 lengthn = 160
 # Takes a column vector and interprets it as all x coordinates followed by all y coordinates, then draws a line between the points on the given image
@@ -79,3 +80,11 @@ def draw_jaw_separation(img,yval):
                 2);
     
     return None
+    
+def vec2graph(vec):
+    plt.plot(vec)
+    plt.show()
+    cv2.waitKey(0)
+    
+if __name__ == '__main__':
+    vec2graph(np.array([1,2,3,4]))
