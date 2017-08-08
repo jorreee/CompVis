@@ -86,7 +86,8 @@ def fit(enhimgtf, edgeimgs, marks , k, orient):
 
     draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
     #draw.draw_contour(colimgtf,approx,color=(0,0,255), thicc=1)
-    #draw.draw_contour(colimgtf,result, thicc=1)
+    #
+    draw.draw_contour(colimgtf,result, thicc=1)
     io.show_on_screen(colimgtf,1)
     
     return result
