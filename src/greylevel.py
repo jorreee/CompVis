@@ -81,10 +81,8 @@ def get_gradients(greyvals):
 # Returns 2k + 1 gradients
 def get_gradients_raw(greyvals):
     values = np.ones(greyvals.size - 1)
-    print '###########'
-    print values.shape
     for i in range(values.size):
-        values[i] = int(greyvals[i + 1]) - int(greyvals[i])
+        values[i] = abs(int(greyvals[i + 1]) - int(greyvals[i]))
     return values
 
 # Gets the grey level statistical model for the slice provided by the coordinates    

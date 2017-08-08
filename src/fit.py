@@ -59,7 +59,7 @@ def fit(enhimgtf, edgeimgs, marks , k, orient):
     b = tx = ty = theta = 0
     s = 1
     colimgtf = io.greyscale_to_colour(imgtf)
-    for i in range(30):
+    for i in range(60):
     #while True:
         approx = find_new_points(imgtf, shape, edgeimgs, k)
         lb = b
@@ -79,7 +79,7 @@ def fit(enhimgtf, edgeimgs, marks , k, orient):
     result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
     
     colimgtf = io.greyscale_to_colour(imgtf)
-    draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
+    #draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
     #draw.draw_contour(colimgtf,approx,color=(0,0,255), thicc=1)
     draw.draw_contour(colimgtf,result, thicc=1)
     io.show_on_screen(colimgtf,1)
@@ -133,7 +133,7 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    wollah = io.get_enhanced_img(11)
+    wollah = io.get_enhanced_img(5)
     imges = io.get_all_gradient_img(1)
     marks = io.read_all_landmarks_by_orientation(0,1)
     points = fit(wollah, imges, marks, 10, 0)
