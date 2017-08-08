@@ -15,14 +15,15 @@ def get_jaw_separation(img):
     
     sep = np.argmin(means) #+ 250
     
-    upper = means[sep-100:sep]
-    lower = means[sep:sep+100]
+    upper = means[sep-50:sep]
+    lower = means[sep:sep+60]
     gradupper = gl.get_gradients(np.array(upper))
     gradlower = gl.get_gradients(np.array(lower))
     uppery = np.argmax(gradupper)
     lowery = np.argmax(gradlower)
+    draw.draw_jaw_separation(smallerimg,uppery + sep-50)
+    draw.draw_jaw_separation(smallerimg,sep)
     draw.draw_jaw_separation(smallerimg,lowery + sep)
-    draw.draw_jaw_separation(smallerimg,uppery + sep)
     colimgtf = io.greyscale_to_colour(smallerimg)
     io.show_on_screen(colimgtf,1)
     return sep
