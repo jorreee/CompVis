@@ -23,13 +23,12 @@ def get_jaw_separation(img):
     loweryf = lowery + sep + 250
     return upperyf, loweryf
 
-def get_centralisation(img, yvalo):
-    yval = yvalo - 250
+def get_centralisation(img, yval):
     start = 100
     eind = 601
-    smallerimg = img[250:650,start:eind]
     
-    reepje = smallerimg[yval,:]
+    reepje = img[yval,start:eind]
+    draw.vec2graph(reepje)
     reepgrad = gl.get_gradients_raw(np.asarray(reepje))
     #draw.vec2graph(reepgrad)
     
@@ -38,9 +37,10 @@ def get_centralisation(img, yvalo):
     for i in range(mid):
         reepgrad[i] *= (float(i)/mid)
         reepgrad[mid + i] *= (float(mid-i)/mid)
-    #draw.vec2graph(reepgrad)
+    draw.vec2graph(reepgrad)
     
     x_offset = np.argmax(reepgrad) - mid
+    
     print x_offset
     return x_offset
 
@@ -53,15 +53,15 @@ def get_initial_transformation(img,meanlm,orient):
         scalefactor = 900
         scale = scalefactor * np.sqrt(meanlm.size/80)
         ty = upper + scale * np.min(meanlm[half:]) + 10
-        tx = 350 + get_centralisation(img,upper)
+        tx = 350 + get_centralisation(img,upper-10)
         rot = 0
     elif orient == 1:
         scalefactor = 750
         scale = scalefactor * np.sqrt(meanlm.size/80)
-        ty = lower - scale * np.min(meanlm[half:])
-        tx = 350 + get_centralisation(img,lower)
+        ty = lower - scale * np.min(meanlm[half:]) - 10
+        tx = 350 + get_centralisation(img,lower+10)
         rot = 0.08
     else:
         print "Only up and down are supported as of yet."
-    tx = 360
+    
     return tx, ty, scale, rot

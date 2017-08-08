@@ -77,11 +77,13 @@ def fit(enhimgtf, edgeimgs, marks , k, orient):
             break;
     
     result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
+
     print marks.shape
     ground = np.reshape(marks[:,9],(marks[:,9].size,1))
     ground = lm.transform_shape(ground,-1150,-500,1,0)
     colimgtf = io.greyscale_to_colour(imgtf)
     #draw.draw_contour(colimgtf,ground,color=(0,0,255), thicc=1)
+
     draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
     #draw.draw_contour(colimgtf,approx,color=(0,0,255), thicc=1)
     #draw.draw_contour(colimgtf,result, thicc=1)
