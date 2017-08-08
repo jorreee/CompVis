@@ -28,3 +28,6 @@ Code hergebruik overview:
 
 
 - Gauss klok over grey level model?
+- Hough transform voor de initiële x
+- Maar helft van image beschouwen voor fit (upper of lower half)
+- Multi resolution framework
