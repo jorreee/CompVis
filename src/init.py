@@ -3,6 +3,7 @@ import numpy as np
 import draw as draw
 import io as io
 import greylevel as gl
+import draw as dr
 
 
 def get_jaw_separation(img):
@@ -10,10 +11,9 @@ def get_jaw_separation(img):
     means = []
     for i in range(len(smallerimg[:,1])):
         means.append(np.mean(smallerimg[i,:]))
+    dr.vec2graph(means)
     
     sep = np.argmin(means) #+ 250
-    sepup = np.argmin(means) + 100
-    sepdown = np.argmin(means) - 100
     
     upper = means[sep-100:sep]
     lower = means[sep:sep+100]
