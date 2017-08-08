@@ -57,12 +57,12 @@ def get_initial_transformation(img,meanlm,orient):
     scalefactor = 900
     scale = scalefactor * np.sqrt(meanlm.size/80)
     rot = 0
-    tx = 324
-    #tx = 390
     if orient == 0:
         ty = upper + scale * np.min(meanlm[half:])
+        tx = 350 + get_centralisation(img,upper)
     elif orient == 1:
         ty = lower - scale * np.min(meanlm[half:])
+        tx = 350 + get_centralisation(img,lower)
     else:
         print "Only up and down are supported as of yet."
     ty = ty + 10
