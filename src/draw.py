@@ -3,6 +3,7 @@ import cv2 as cv2
 import numpy as np
 import landmarks as lms
 import matplotlib.pyplot as plt
+import io as io
 
 lengthn = 160
 # Takes a column vector and interprets it as all x coordinates followed by all y coordinates, then draws a line between the points on the given image
@@ -85,6 +86,23 @@ def vec2graph(vec):
     plt.plot(vec)
     plt.show()
     cv2.waitKey(0)
+    
+def draw_hough_lines(img,lines):
+    img = io.greyscale_to_colour(img)
+    for rho,theta in lines:
+        a = np.cos(theta)
+        x0 = a*rho
+        b = np.sin(theta)
+        y0 = b*rho
+        x1 = int(x0 + 1000*(-b))
+        y1 = int(y0 + 1000*(a))
+        x2 = int(x0 - 1000*(-b))
+        y2 = int(y0 - 1000*(a))
+        cv2.line(img,(x1,y1),(x2,y2),(0,0,255),1)
+    io.show_on_screen(img)
+    
+    return None
+
     
 if __name__ == '__main__':
     vec2graph(np.array([1,2,3,4]))

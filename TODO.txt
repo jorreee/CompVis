@@ -27,7 +27,14 @@ Code hergebruik overview:
 - Initial position: 
 
 
-- Gauss klok over grey level model?
+ISSUES:
+- Initial x positie wordt nog niet volledig robuust bepaald => Hough?
+- Lower incisors doen nog rare stuff => Helft eraf knippen? MRF?
+
+TODO:
 - Hough transform voor de initiële x
 - Maar helft van image beschouwen voor fit (upper of lower half)
 - Multi resolution framework
+
+Optional:
+- Gauss klok over grey level model?
