@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import cv2
+import math
 import numpy as np
 import landmarks as lm; reload(lm)
 import preprocess as pp
@@ -12,9 +13,10 @@ import sys as sys
 from numpy import linalg as LA
 
 # Finds the new landmarks points by using the grey level model of a certain shape
-def find_new_points(imgtf, shapeo, edgeimgs, k):
-    shape = np.copy(shapeo)
-    m = 2*k    
+def find_new_points(imgtf, shapeo, edgeimgs, k, m):
+    stop = False
+    counter = 0
+    shape = np.copy(shapeo)   
     normalvectors = gl.get_normals(shape)
     normalvectors = np.reshape(normalvectors,(normalvectors.size / 2, 2),'F')
     shape = np.reshape(shape,(shape.size / 2, 2),'F')
@@ -31,71 +33,99 @@ def find_new_points(imgtf, shapeo, edgeimgs, k):
         dist = np.zeros(2*(m - k) + 1)
         for j in range(0,2*(m - k) + 1):
             # Pinv gives the same result as inv for Mahalanobis
-            dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)],pmean,LA.pinv(pcov))
-            #if is_singular(pcov):
-            #    dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)],pmean,LA.pinv(pcov))
-            #else:
-            #    dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)],pmean,LA.inv(pcov))               
+            dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)],pmean,LA.pinv(pcov))              
         #dist[k] = 0.85 * dist[k]
         min_ind = np.argmin(dist)
+        lower = slices[0,:].size / 4
+        upper = lower + slices[0,:].size / 2
+        if (min_ind + k < lower or min_ind + k >= upper):
+             counter += 1
         new_point = slices[:,min_ind+k]
         shape[i] = new_point
+    
+    if counter / (shape.size/2) < 0.01:
+        stop = False
     shape = np.reshape(shape,(shape.size, 1),'F')  
-    return shape
+    return shape, stop
 
 # Imgtf is enhanced image, edgeimgs are gradient images    
-def fit(enhimgtf, edgeimgs, marks , k, orient):
-    conv_thresh = 0.0001 
+def asm(imgtf, edgeimgs, b, tx, ty, s, theta, k, stdvar, mean, eigenvecs):
     
-    lms,_ = lm.procrustes(marks)
-    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms,5)
-    stdvar = np.std(lm_reduced, axis=1)
-    
-    itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
-    shape = lm.transform_shape(mean,itx,ity,isc,itheta)
-    first = shape
-    
-    imgtf = pp.apply_sobel(enhimgtf)
-    b = tx = ty = theta = 0
-    s = 1
-    colimgtf = io.greyscale_to_colour(imgtf)
-    for i in range(1):
-    #while True:
-        approx = find_new_points(imgtf, shape, edgeimgs, k)
-        lb = b
-        ltx = tx
-        lty = ty
-        ls = s
-        ltheta = theta
+    for i in range(20):
+        print i
+        shapetf = lm.pca_reconstruct(b,mean,eigenvecs)
+        shapetf = lm.transform_shape(shapetf, tx, ty, s, theta)
+        approx, stop = find_new_points(imgtf, shapetf, edgeimgs, k, 2*k)
+        if stop:
+            break
         b, tx, ty, s, theta = match_model_to_target(approx, mean, eigenvecs)
         #Check for plausible shapes
         for i in range(b.size):
             b[i] = max(min(b[i],3*stdvar[i]),-3*stdvar[i])
-        shape = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
-        if ((b - lb < conv_thresh).all() and tx - ltx < conv_thresh and 
-            ty - lty < conv_thresh and s - ls < conv_thresh and theta - ltheta < conv_thresh):
-            break;
     
-    result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
+    return b, tx, ty, s, theta
+    #result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
 
-    ground = np.reshape(marks[:,12],(marks[:,12].size,1))
-    ground = lm.transform_shape(ground,-1150,-500,1,0)
-    colimgtf = io.greyscale_to_colour(imgtf)
+    #ground = np.reshape(marks[:,12],(marks[:,12].size,1))
+    #ground = lm.transform_shape(ground,-1150,-500,1,0)
     #draw.draw_contour(colimgtf,ground,color=(0,0,255), thicc=1)
 
-    draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
+    #draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
     #draw.draw_contour(colimgtf,approx,color=(0,0,255), thicc=1)
     #draw.draw_contour(colimgtf,result, thicc=1)
-    io.show_on_screen(colimgtf,1)
+    #io.show_on_screen(colimgtf,1)
     
-    return result
+    #return result
 
-# Does not work robustly?     
-def is_singular(matrix):
-    if LA.cond(matrix) < 1/sys.float_info.epsilon:
-        return False
-    else:
-        return True
+
+def srasm(enhimgtf, edgeimgs, marks, orient, k, modes):
+    lms,_ = lm.procrustes(marks)
+    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
+    stdvar = np.std(lm_reduced, axis=1)
+    
+    itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
+    b = np.zeros((modes,1))
+    
+    imgtf = pp.apply_sobel(enhimgtf)
+    b, ntx, nty, nsc, itheta = asm(imgtf, edgeimgs, b, itx, ity, isc, itheta, k, stdvar, mean, eigenvecs)      
+    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),itx,ity,isc,itheta)
+
+def mrasm(enhimgtf, edgeimgs, marks, orient, k, modes):
+    lms,_ = lm.procrustes(marks)
+    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
+    stdvar = np.std(lm_reduced, axis=1)
+    
+    itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
+    b = np.zeros((modes,1))
+    
+    imgtf = pp.apply_sobel(enhimgtf)
+    for i in range(3):
+        edgies = edgeimgs
+        limgtf =  imgtf
+        j = 0
+        while j < i:
+            limgtf = cv2.pyrDown(limgtf)
+            edgies = np.array(map(lambda x: cv2.pyrDown(x),edgies))
+            j += 1
+            
+        b, ntx, nty, nsc, itheta = asm(imgtf, edgies, b, itx / math.pow(2.0,(2-i)), ity / math.pow(2.0,(2-i)), isc / math.pow(2.0,(2-i)), itheta, k, stdvar, mean, eigenvecs)
+        itx = ntx * math.pow(2.0,(2-i))
+        ity = nty * math.pow(2.0,(2-i))
+        isc = nsc * math.pow(2.0,(2-i))
+        
+    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),itx,ity,isc,itheta)
+    
+    #colimgtf = io.greyscale_to_colour(imgtf) 
+    #draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
+    #io.show_on_screen(colimgtf,1)
+    #
+    #smalleritx = itx /2
+    #smallerity = ity /2
+    #smallerisc = isc /2
+    #smallershape = lm.transform_shape(mean,smalleritx,smallerity,smallerisc,itheta)
+    #smallercolimgtf = cv2.pyrDown(colimgtf)
+    #draw.draw_contour(smallercolimgtf,smallershape,color=(0,255,0), thicc=1)
+    #io.show_on_screen(smallercolimgtf,1)
 
 # Finds the shape parameter terms b and the pose transformation T(tx,ty,s,theta) 
 #  that best matches the model x = xbar + P * b (in object space) tot the new points Y (in image space).
@@ -137,10 +167,15 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    wollah = io.get_enhanced_img(14)
+    wollah = io.get_enhanced_img(1)
     imges = io.get_all_gradient_img(1)
-    marks = io.read_all_landmarks_by_orientation(1)
-    points = fit(wollah, imges, marks, 10, 1)
+    marks = io.read_all_landmarks_by_orientation(0,1)
+    points = srasm(wollah, imges, marks,0, 10, 5)
+    owollah = io.greyscale_to_colour(wollah)
+    draw.draw_contour(owollah,points, thicc=2)
+    io.show_on_screen(owollah,1)
+    
+    
     
     #owollah = io.greyscale_to_colour(owollah)
     #tx, ty, s, r = init.get_initial_transformation(wollah,mean,0)

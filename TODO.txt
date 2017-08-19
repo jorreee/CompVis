@@ -32,7 +32,6 @@ ISSUES:
 - Lower incisors doen nog rare stuff => Helft eraf knippen? MRF?
 
 TODO:
-- Hough transform voor de initiële x
 - Maar helft van image beschouwen voor fit (upper of lower half)
 - Multi resolution framework
 

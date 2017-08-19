@@ -49,6 +49,7 @@ def get_centralisation_old(img, yval):
 def get_centralisation(img):
     lines, xoffset = hough(img)
     #draw.draw_hough_lines(img,lines)
+    #io.show_on_screen(img,1)
     #print xoffset
     return xoffset
 
@@ -88,7 +89,7 @@ def get_initial_transformation(img,meanlm,orient):
     elif orient == 1:
         scalefactor = 750
         scale = scalefactor * np.sqrt(meanlm.size/80)
-        ty = lower - scale * np.min(meanlm[half:]) - 10
+        ty = lower - scale * np.min(meanlm[half:])
         tx = 350 + get_centralisation(img[250 + sep: 250 + sep + 200,250:450])
         rot = 0.08
     else:

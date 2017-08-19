@@ -8,6 +8,7 @@ def show_on_screen(img,scale=1):
     height, width, _ = img.shape;
     cv2.resizeWindow('image', width / scale, height / scale)
     cv2.imshow('image',img);
+    cv2.waitKey(0);
     
 def show_on_screen_greyscale(img,scale=1):
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
