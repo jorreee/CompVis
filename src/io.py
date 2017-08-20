@@ -47,17 +47,21 @@ def get_enhanced_img(i):
     
 def get_all_gradient_img(excepti=-1):
     edges = np.array([])
-    for i in range(14):
-        if (i+1 == excepti):
+    for i in range(28):
+        if (i+1 == excepti or i+1 == excepti + 14):
             continue
         else:
-            imgi = get_gradient_img(i+1)
+            imgi = None
+            if i >= 14:
+                imgi = cv2.flip(get_gradient_img(i - 13),1)
+            else: 
+                imgi = get_gradient_img(i+1)
             if(len(edges) == 0):
                 edges = np.asarray(imgi)
             else:
                 edges = np.append(edges,imgi)
     
-    return edges.reshape(13,930,700)
+    return edges.reshape(26,930,700)
     
 
 # Returns a landmark file as a list of the form 
@@ -87,7 +91,7 @@ def read_all_landmarks_by_img(imgi):
     lsx = np.array([])
     lsy = np.array([])
     for i in range(8):
-        if imgi < 14:
+        if imgi <= 14:
             tooth = read_landmark('data/Landmarks/landmarks'+str(imgi)+'-'+str(i+1)+'.txt')
         else:
             tooth = read_mirrored_landmark('data/Landmarks/landmarks'+str(imgi)+'-'+str(i+1)+'.txt')
@@ -139,7 +143,7 @@ def read_all_landmarks_by_orientation(toothies, excepti=-1):
      #   ls.append([])
     
     for i in range(28):
-        if (i+1 == excepti):
+        if (i+1 == excepti or i+1 == excepti + 14):
             continue
         imgteeth = read_all_landmarks_by_img(i + 1)
         half = imgteeth.size / 2

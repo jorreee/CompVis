@@ -98,19 +98,6 @@ def srasm2(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
     b, ntx, nty, nsc, itheta = asm(imgtf, edgies, b, itx / 2, ity / 2, isc / 2, itheta, k, m, stdvar, mean, eigenvecs, maxiter)      
     return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),ntx * 2,nty * 2,nsc * 2,itheta)
 
-def srasm4(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
-    lms,_ = lm.procrustes(marks)
-    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
-    stdvar = np.std(lm_reduced, axis=1)
-    
-    itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
-    b = np.zeros((modes,1))
-    
-    imgtf = pp.apply_sobel(enhimgtf)
-    imgtf = cv2.pyrDown(cv2.pyrDown(imgtf))
-    edgies = np.array(map(lambda x: cv2.pyrDown(cv2.pyrDown(x)),edgeimgs))
-    b, ntx, nty, nsc, itheta = asm(imgtf, edgies, b, itx / 4, ity / 4, isc / 4, itheta, k, m, stdvar, mean, eigenvecs, maxiter)      
-    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),ntx * 4,nty * 4,nsc * 4,itheta)
     
 def srasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
     lms,_ = lm.procrustes(marks)
@@ -156,7 +143,7 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
     
     if orientation != 1:
         marks = io.read_all_landmarks_by_orientation(0,imgind)
-        upper = mrasm(img, imges, marks,0, k, m, modes, maxiter)
+        upper = srasm(img, imges, marks,0, k, m, modes, maxiter)
         draw.draw_contour(colgradimg,upper, thicc=1)
         
         if showground:
@@ -168,7 +155,7 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
         
     if orientation != 0:
         marks = io.read_all_landmarks_by_orientation(1,imgind)
-        lower = mrasm(img, imges, marks,1, k, m, modes, maxiter)
+        lower = srasm(img, imges, marks,1, k, m, modes, maxiter)
         draw.draw_contour(colgradimg,lower, thicc=1)
         
         if showground:
@@ -180,6 +167,20 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
           
     io.show_on_screen(colgradimg,1)
     return None
+    
+#def srasm4(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
+#    lms,_ = lm.procrustes(marks)
+#    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
+#    stdvar = np.std(lm_reduced, axis=1)
+#    
+#    itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
+#    b = np.zeros((modes,1))
+#    
+#    imgtf = pp.apply_sobel(enhimgtf)
+#    imgtf = cv2.pyrDown(cv2.pyrDown(imgtf))
+#    edgies = np.array(map(lambda x: cv2.pyrDown(cv2.pyrDown(x)),edgeimgs))
+#    b, ntx, nty, nsc, itheta = asm(imgtf, edgies, b, itx / 4, ity / 4, isc / 4, itheta, k, m, stdvar, mean, eigenvecs, maxiter)      
+#    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),ntx * 4,nty * 4,nsc * 4,itheta)
     
 
 # Finds the shape parameter terms b and the pose transformation T(tx,ty,s,theta) 
@@ -226,16 +227,43 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    match_image(2, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 20)
+    #match_image(12, orientation = 2, showground = True, modes = 5, k = 10, m = 20, maxiter = 0)
+    
+    imges = io.get_all_gradient_img(2)
+    marks = io.read_all_landmarks_by_orientation(0,2)
+    
+    croppedmarks = np.array([])
+    for i in range(13):
+        croppedmarks = np.append(croppedmarks,lm.transform_shape(np.reshape(marks[:,i],(marks[:,i].size,1)),-1150,-500,1,0))
+    for i in range(13):
+        croppedmarks = np.append(croppedmarks,lm.transform_shape(np.reshape(marks[:,i + 13],(marks[:,i + 13].size,1)),-1173,-500,1,0))
+    croppedmarks = np.reshape(croppedmarks,(croppedmarks.size / 26,26),'F') 
+    
+    wollah = io.greyscale_to_colour(imges[17])
+    ground = np.reshape(croppedmarks[:,17],(croppedmarks[:,15].size,1))
+    draw.draw_contour(wollah,ground,color=(0,0,255), thicc=1)
+    io.show_on_screen(wollah,1)
+
+    gl.get_statistical_model_new(imges,croppedmarks,5)
+    
     #wollah = io.get_enhanced_img(2)
     #imges = io.get_all_gradient_img(2)
+    #print imges.shape
     #marks = io.read_all_landmarks_by_orientation(0,2)
     #points = srasm2(wollah, imges, marks,0, 5, 5)
-    #owollah = io.greyscale_to_colour(pp.apply_sobel(wollah))
+    #owollah = io.greyscale_to_colour(cv2.flip(pp.apply_sobel(wollah),1))
     #
     #marks2 = io.read_all_landmarks_by_orientation(0)
-    #ground = np.reshape(marks2[:,1],(marks2[:,1].size,1))
+    #ground = np.reshape(marks2[:,14],(marks2[:,14].size,1))
+    
+    #!!!!!!!!!!!!!!!!
+    # Landmark transformation for cutoff
     #ground = lm.transform_shape(ground,-1150,-500,1,0)
+    # Mirrored landmark transformation for cutoff
+    #ground = lm.transform_shape(ground,-1173,-500,1,0)
+    
+    
+    
     #draw.draw_contour(owollah,ground,color=(0,0,255), thicc=1)
     #
     #draw.draw_contour(owollah,points, thicc=1)

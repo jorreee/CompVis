@@ -42,12 +42,12 @@ def get_single_slice_side(point, nv, k):
     
     return coordinates
 
-# Gets the slice indices in both directions starting from the point along k pixels in the direction of -nv and k +1 pixels in the direction of nv (for gradients) 
+# Gets the slice indices in both directions starting from the point along k pixels in the direction of -nv and k +1 pixels in the direction of nv (for gradients, DEPRECATED) 
 # Point and nv are represented as (x,y).
 # Returns an array with the shape of (2,2(k + 1)), due to the gradient needing one extra pixel  
 def get_slice_indices(point,nv, k): 
-    # One extra in the up direction for gradient 
-    up = get_single_slice_side(point,nv,k)  
+    up = get_single_slice_side(point,nv,k)
+    # (Deprecated) One extra in the up direction for gradient   
     #up = get_single_slice_side(point,nv,k + 1)
     
     down = get_single_slice_side(point, -1*nv,k)
@@ -100,3 +100,26 @@ def get_statistical_model(imgs,coords,k):
        
     return mean, cov
     
+# Gets the grey level model of the 26 imgs (26*930*700) with the 26 marks (320*26) (mirrored included, explaining the 26).
+def get_statistical_model_new(imgs,marks,k):
+    half = marks[:,0].size / 2
+    #  Get the normals in the same shape as the marks (320*26)
+    normals = np.array([])
+    for i in range(26):
+        normals = np.append(normals,get_normals(np.reshape(marks[:,i - 1],(marks[:,i - 1].size,1))))
+    normals = np.reshape(normals,(normals.size / 26,26),'F')  
+    for i in range(half):
+        gradvals = np.array([])
+        for j in range(26):
+            slicecoords = get_slice_indices(np.array([marks[i,j],marks[i+half,j]]),np.array([normals[i,j],normals[i+half,j]]),k)
+            if len(gradvals) == 0:
+                gradvals = np.asarray(slice_image(slicecoords,imgs[j]))
+            else:
+                gradvals = np.append(gradvals,slice_image(slicecoords,imgs[j]))
+        gradvals = gradvals.reshape(26,2*k+1)
+        mean = np.mean(gradvals,0)
+        cov = np.cov(gradvals.T)
+    
+    #Alle mean en covs moeten nog op dit niveau opgevangen worden en teruggegeven worden
+
+        
