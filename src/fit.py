@@ -40,63 +40,49 @@ def find_new_points(imgtf, shapeo, edgeimgs, k, m):
             dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)].flatten(),pmean,LA.pinv(pcov))              
         #dist[k] = 0.85 * dist[k]
         min_ind = np.argmin(dist)
-        lower = slices[0,:].size / 4
-        upper = lower + slices[0,:].size / 2
-        if (min_ind + k < lower or min_ind + k >= upper):
-             counter += 1
+        lower = slices[0,:].size / 4.0 + slices[0,:].size / 8.0
+        upper = lower + slices[0,:].size / 4.0
+        #print '#####'
+        #print lower
+        #print upper
+        #print min_ind
+        #print str(min_ind + k)
+        if (min_ind + k <= lower or min_ind + k >= upper):
+            #print 'DING'
+            counter += 1
         new_point = slices[:,min_ind+k]
         shape[i] = new_point
     
     #draw.draw_contour(col,shape,(0,0,255))
     #io.show_on_screen(col,1)
     
-    if counter / (shape.size/2) < 0.01:
-        stop = False
+    print str(float(counter) / (shape.size/2))
+    if float(counter) / (shape.size/2) < 0.05:
+        stop = True
     shape = np.reshape(shape,(shape.size, 1),'F')  
     return shape, stop
     
-
-
-# Imgtf is enhanced image, edgeimgs are gradient images    
+   
 def asm(imgtf, edgeimgs, b, tx, ty, s, theta, k, m, stdvar, mean, eigenvecs, maxiter):
     
-    for i in range(maxiter):        
-        print i
-        col = io.greyscale_to_colour(imgtf)
-        
+    for i in range(maxiter):                
         shapetf = lm.pca_reconstruct(b,mean,eigenvecs)
         shapetf = lm.transform_shape(shapetf, tx, ty, s, theta)        
         approx, stop = find_new_points(imgtf, shapetf, edgeimgs, k, m)
-    
-        draw.draw_contour(col,shapetf,(0,255,0))
-        #draw.draw_contour(col,approx)
         
         if stop:
+            print i
             break
         b, tx, ty, s, theta = match_model_to_target(approx, mean, eigenvecs)
         
         #Check for plausible shapes
         for i in range(b.size):
             b[i, 0] = max(min(b[i, 0],3*stdvar[i]),-3*stdvar[i])
-            
-        newshape = lm.pca_reconstruct(b,mean,eigenvecs)
-        newshape = lm.transform_shape(newshape, tx, ty, s, theta)
-        draw.draw_contour(col,newshape,(0,0,255))
-        #io.show_on_screen(col,1)
+        
+        if i == maxiter - 1:
+            print i
     
     return b, tx, ty, s, theta
-    #result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
-
-    #ground = np.reshape(marks[:,12],(marks[:,12].size,1))
-    #ground = lm.transform_shape(ground,-1150,-500,1,0)
-    #draw.draw_contour(colimgtf,ground,color=(0,0,255), thicc=1)
-
-    #draw.draw_contour(colimgtf,first,color=(0,255,0), thicc=1)
-    #draw.draw_contour(colimgtf,approx,color=(0,0,255), thicc=1)
-    #draw.draw_contour(colimgtf,result, thicc=1)
-    #io.show_on_screen(colimgtf,1)
-    
-    #return result
 
 def srasm2(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
     lms,_ = lm.procrustes(marks)

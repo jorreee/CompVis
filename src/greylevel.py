@@ -58,7 +58,7 @@ def get_slice_indices(point,nv, k):
     
     return tot
 
-# Gets the gradient of the grey values of an image along the slice provided by the 2(k + 1) coordinates
+# Gets the gradient of the grey values of an image along the slice provided by the 2k + 1 coordinates
 # Returns 2k + 1 gradients
 def slice_image(coords,img):
     r, c = coords.shape
