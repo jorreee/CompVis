@@ -40,18 +40,25 @@ def find_new_points(imgtf, shapeo, edgeimgs, k, m):
             dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)].flatten(),pmean,LA.pinv(pcov))              
         #dist[k] = 0.85 * dist[k]
         min_ind = np.argmin(dist)
-        lower = slices[0,:].size / 4
-        upper = lower + slices[0,:].size / 2
-        if (min_ind + k < lower or min_ind + k >= upper):
-             counter += 1
+        lower = slices[0,:].size / 4.0 + slices[0,:].size / 8.0
+        upper = lower + slices[0,:].size / 4.0
+        #print '#####'
+        #print lower
+        #print upper
+        #print min_ind
+        #print str(min_ind + k)
+        if (min_ind + k <= lower or min_ind + k >= upper):
+            #print 'DING'
+            counter += 1
         new_point = slices[:,min_ind+k]
         shape[i] = new_point
     
     #draw.draw_contour(col,shape,(0,0,255))
     #io.show_on_screen(col,1)
     
-    if counter / (shape.size/2) < 0.01:
-        stop = False
+    print str(float(counter) / (shape.size/2))
+    if float(counter) / (shape.size/2) < 0.05:
+        stop = True
     shape = np.reshape(shape,(shape.size, 1),'F')  
     return shape, stop
     
@@ -60,8 +67,8 @@ def find_new_points(imgtf, shapeo, edgeimgs, k, m):
 # Imgtf is enhanced image, edgeimgs are gradient images    
 def asm(imgtf, edgeimgs, b, tx, ty, s, theta, k, stdvar, mean, eigenvecs):
     
-    for i in range(20):        
-        print i
+    for i in range(200):        
+        #print i
         col = io.greyscale_to_colour(imgtf)
         
         shapetf = lm.pca_reconstruct(b,mean,eigenvecs)
@@ -72,6 +79,7 @@ def asm(imgtf, edgeimgs, b, tx, ty, s, theta, k, stdvar, mean, eigenvecs):
         #draw.draw_contour(col,approx)
         
         if stop:
+            print i
             break
         b, tx, ty, s, theta = match_model_to_target(approx, mean, eigenvecs)
         
@@ -82,7 +90,8 @@ def asm(imgtf, edgeimgs, b, tx, ty, s, theta, k, stdvar, mean, eigenvecs):
         newshape = lm.pca_reconstruct(b,mean,eigenvecs)
         newshape = lm.transform_shape(newshape, tx, ty, s, theta)
         draw.draw_contour(col,newshape,(0,0,255))
-        io.show_on_screen(col,1)
+        if i == 199:
+            io.show_on_screen(col,1)
     
     return b, tx, ty, s, theta
     #result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
