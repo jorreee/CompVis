@@ -152,18 +152,6 @@ def get_align_params(x1,x2):
         
     return t[0,0],t[1,0], s, theta
 
-#TODO deprecated
-def convert_landmarklist_to_np(lms):
-    # Leg alle vectoren plat
-    xlms = map(lambda el: el.T,lms)
-    # Maak een np.array, resultaat is 3D
-    xlms = np.asarray(xlms,order='F')    
-    # Strijk de vectoren plat in 2D
-    xlms = xlms.reshape(28,2*lengthn)
-    # shape is nu 28x80
-    # print xlms.shape
-    
-    return xlms
 
 # Extracts a PCA model from the given list of shapes, using the specified number
 # of components. 
@@ -238,69 +226,3 @@ def get_num_eigenvecs_needed(eigenvals):
         #if sum(eigenvals[0:i+1])/tot > 0.95:
          #   return num
     return num
-    
-#if __name__ == '__main__':
-    #marks = io.read_all_landmarks_by_tooth(0)
-    #img = io.get_objectspace_img()
-    #[lm,mn] = procrustes(marks)
-    #draw.draw_aligned_contours(img,lm)
-    #io.show_on_screen(img)
-    
-    #normies = gl.get_normals(np.reshape(marks[:,0],(marks[:,0].size,1)))
-    # Lege witte image maken voor procrustes afbeelding
-    #img = np.zeros((512,512,3), np.uint8)
-    #img[:] = (255, 255, 255)
-    #img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
-    
-    
-    #draw.draw_all_contours(img, np.reshape(marks[:,0],(marks[:,0].size,1)))
-    #draw.draw_normals(img, np.reshape(marks[:,0],(marks[:,0].size,1)), normies)
-    #[lm,mn] = procrustes(marks)
-    #mean, eigenvecs, eigenvals, lm_reduced = pca_reduce(lm,9)
-    
-    #stdvar = np.std(lm_reduced, axis=1)
-    #recon_lms = pca_reconstruct(lm_reduced, mean, eigenvecs)
-    #mean2 = mean.reshape(2,lengthn).T
-    #plus_one = pca_reconstruct(np.array([[3*stdvar[0],0,0,0,0,0,0,0,0]]).flatten(),mean, eigenvecs)
-    #plus_one = pca_reconstruct(200*np.array([eigenvals[0:9]]),mean, eigenvecs).reshape(2,lengthn).T
-    #plus_one = pca_reconstruct(np.array([[0,0,0,0,0,0,0,0,0]]),mean, eigenvecs).reshape(2,lengthn).T
-    #draw.draw_aligned_contours(img,plus_one)
-    #draw.draw_aligned_contours(img,plus_one)
-    
-    
-    # Dental radiograph inladen
-    #img = cv2.imread("data/Radiographs/01.tif", cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
-    
-    # Lege witte image maken voor procrustes afbeelding
-    #img = np.zeros((512,512,3), np.uint8)
-    #img[:] = (255, 255, 255)
-    
-    #tmp = open('data/Landmarks/original/landmarks1-1.txt').readlines();
-    #for ind in range(0, len(tmp), 2):
-    #    if (ind + 2 >= len(tmp)):
-    #        cv2.line(img,(int(float(tmp[ind].strip())),int(float(tmp[ind +1].strip()))),(int(float(tmp[0].strip())),int(float(tmp[1].strip()))),(255,0,0),2);
-    #    else :
-    #        cv2.line(img,(int(float(tmp[ind].strip())),int(float(tmp[ind +1].strip()))),(int(float(tmp[ind +2].strip())),int(float(tmp[ind +3].strip()))),(255,0,0),2);
-    # lm = read_all_landmarks_by_tooth(1)
-    #lm = read_all_landmarks_by_orientation(0)
-    #lm,mean = procrustes(lm)
-    #draw_aligned_landmarks(img,lm)
-
-    #mean, eigenvecs, eigenvals, lm_reduced = pca_reduce(lm,mean,9)
-    
-    #maxNumVecsNeeded = get_num_eigenvecs_needed(eigenvals)
-    #stdvar = np.std(lm_reduced, axis=0)
-    
-    #recon_lms = pca_reconstruct(lm_reduced, mean, eigenvecs)
-    #mean2 = mean.reshape(2,lengthn).T
-    #plus_one = pca_reconstruct(np.array([[-3*stdvar[0],0,0,0,0,0,0,0,0]]),mean, eigenvecs).reshape(2,lengthn).T
-    #plus_one = pca_reconstruct(200*np.array([eigenvals[0:9]]),mean, eigenvecs).reshape(2,lengthn).T
-    #plus_one = pca_reconstruct(np.array([[0,0,0,0,0,0,0,0,0]]),mean, eigenvecs).reshape(2,lengthn).T
-    
-    #draw_aligned_landmarks(img,[mean2,plus_one])
-    
-    # draw_pca_reconstruction(img,recon_lms)
-    #cv2.imshow('image',img);
-    # cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-    # height, width, _ = img.shape;
-    # cv2.resizeWindow('image', width / 2, height /2)

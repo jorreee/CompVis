@@ -20,6 +20,9 @@ def find_new_points(imgtf, shapeo, edgeimgs, k, m):
     normalvectors = gl.get_normals(shape)
     normalvectors = np.reshape(normalvectors,(normalvectors.size / 2, 2),'F')
     shape = np.reshape(shape,(shape.size / 2, 2),'F')
+ 
+    #col = io.greyscale_to_colour(imgtf)
+    #draw.draw_contour(col,shape)
     # Voor ieder punt
     for i in range(shape.size / 2):
         # Bereken stat model
@@ -33,7 +36,8 @@ def find_new_points(imgtf, shapeo, edgeimgs, k, m):
         dist = np.zeros(2*(m - k) + 1)
         for j in range(0,2*(m - k) + 1):
             # Pinv gives the same result as inv for Mahalanobis
-            dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)],pmean,LA.pinv(pcov))              
+            #dist[j] = np.dot(np.dot((own_gradient_profile[j:j+(2*k + 1)].flatten() - pmean).T,LA.pinv(pcov)),(own_gradient_profile[j:j+(2*k + 1)].flatten() - pmean))
+            dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)].flatten(),pmean,LA.pinv(pcov))              
         #dist[k] = 0.85 * dist[k]
         min_ind = np.argmin(dist)
         lower = slices[0,:].size / 4
@@ -43,25 +47,42 @@ def find_new_points(imgtf, shapeo, edgeimgs, k, m):
         new_point = slices[:,min_ind+k]
         shape[i] = new_point
     
+    #draw.draw_contour(col,shape,(0,0,255))
+    #io.show_on_screen(col,1)
+    
     if counter / (shape.size/2) < 0.01:
         stop = False
     shape = np.reshape(shape,(shape.size, 1),'F')  
     return shape, stop
+    
+
 
 # Imgtf is enhanced image, edgeimgs are gradient images    
 def asm(imgtf, edgeimgs, b, tx, ty, s, theta, k, stdvar, mean, eigenvecs):
     
-    for i in range(20):
+    for i in range(20):        
         print i
+        col = io.greyscale_to_colour(imgtf)
+        
         shapetf = lm.pca_reconstruct(b,mean,eigenvecs)
-        shapetf = lm.transform_shape(shapetf, tx, ty, s, theta)
+        shapetf = lm.transform_shape(shapetf, tx, ty, s, theta)        
         approx, stop = find_new_points(imgtf, shapetf, edgeimgs, k, 2*k)
+    
+        draw.draw_contour(col,shapetf,(0,255,0))
+        #draw.draw_contour(col,approx)
+        
         if stop:
             break
         b, tx, ty, s, theta = match_model_to_target(approx, mean, eigenvecs)
+        
         #Check for plausible shapes
         for i in range(b.size):
-            b[i] = max(min(b[i],3*stdvar[i]),-3*stdvar[i])
+            b[i, 0] = max(min(b[i, 0],3*stdvar[i]),-3*stdvar[i])
+            
+        newshape = lm.pca_reconstruct(b,mean,eigenvecs)
+        newshape = lm.transform_shape(newshape, tx, ty, s, theta)
+        draw.draw_contour(col,newshape,(0,0,255))
+        io.show_on_screen(col,1)
     
     return b, tx, ty, s, theta
     #result = lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),tx,ty,s,theta)
@@ -77,7 +98,34 @@ def asm(imgtf, edgeimgs, b, tx, ty, s, theta, k, stdvar, mean, eigenvecs):
     
     #return result
 
+def srasm2(enhimgtf, edgeimgs, marks, orient, k, modes):
+    lms,_ = lm.procrustes(marks)
+    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
+    stdvar = np.std(lm_reduced, axis=1)
+    
+    itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
+    b = np.zeros((modes,1))
+    
+    imgtf = pp.apply_sobel(enhimgtf)
+    imgtf = cv2.pyrDown(imgtf)
+    edgies = np.array(map(lambda x: cv2.pyrDown(x),edgeimgs))
+    b, ntx, nty, nsc, itheta = asm(imgtf, edgies, b, itx / 2, ity / 2, isc / 2, itheta, k, stdvar, mean, eigenvecs)      
+    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),ntx * 2,nty * 2,nsc * 2,itheta)
 
+def srasm4(enhimgtf, edgeimgs, marks, orient, k, modes):
+    lms,_ = lm.procrustes(marks)
+    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
+    stdvar = np.std(lm_reduced, axis=1)
+    
+    itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
+    b = np.zeros((modes,1))
+    
+    imgtf = pp.apply_sobel(enhimgtf)
+    imgtf = cv2.pyrDown(cv2.pyrDown(imgtf))
+    edgies = np.array(map(lambda x: cv2.pyrDown(cv2.pyrDown(x)),edgeimgs))
+    b, ntx, nty, nsc, itheta = asm(imgtf, edgies, b, itx / 4, ity / 4, isc / 4, itheta, k, stdvar, mean, eigenvecs)      
+    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),ntx * 4,nty * 4,nsc * 4,itheta)
+    
 def srasm(enhimgtf, edgeimgs, marks, orient, k, modes):
     lms,_ = lm.procrustes(marks)
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
@@ -88,7 +136,7 @@ def srasm(enhimgtf, edgeimgs, marks, orient, k, modes):
     
     imgtf = pp.apply_sobel(enhimgtf)
     b, ntx, nty, nsc, itheta = asm(imgtf, edgeimgs, b, itx, ity, isc, itheta, k, stdvar, mean, eigenvecs)      
-    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),itx,ity,isc,itheta)
+    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),ntx,nty,nsc,itheta)
 
 def mrasm(enhimgtf, edgeimgs, marks, orient, k, modes):
     lms,_ = lm.procrustes(marks)
@@ -99,19 +147,19 @@ def mrasm(enhimgtf, edgeimgs, marks, orient, k, modes):
     b = np.zeros((modes,1))
     
     imgtf = pp.apply_sobel(enhimgtf)
-    for i in range(3):
+    for i in range(2):
         edgies = edgeimgs
         limgtf =  imgtf
         j = 0
-        while j < i:
+        while 1 - i > j:
             limgtf = cv2.pyrDown(limgtf)
             edgies = np.array(map(lambda x: cv2.pyrDown(x),edgies))
-            j += 1
-            
-        b, ntx, nty, nsc, itheta = asm(imgtf, edgies, b, itx / math.pow(2.0,(2-i)), ity / math.pow(2.0,(2-i)), isc / math.pow(2.0,(2-i)), itheta, k, stdvar, mean, eigenvecs)
-        itx = ntx * math.pow(2.0,(2-i))
-        ity = nty * math.pow(2.0,(2-i))
-        isc = nsc * math.pow(2.0,(2-i))
+            j += 1 
+        print edgies.shape
+        b, ntx, nty, nsc, itheta = asm(limgtf, edgies, b, itx / math.pow(2.0,(1-i)), ity / math.pow(2.0,(1-i)), isc / math.pow(2.0,(1-i)), itheta, k, stdvar, mean, eigenvecs)
+        itx = ntx * math.pow(2.0,(1-i))
+        ity = nty * math.pow(2.0,(1-i))
+        isc = nsc * math.pow(2.0,(1-i))
         
     return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),itx,ity,isc,itheta)
     
@@ -137,8 +185,6 @@ def match_model_to_target(Y, xbar, P):
     lb = np.reshape(np.zeros(P[0].size),(P[0].size,1))
     tx = ty = theta = 0
     s = 1
-    ltx = lty = ltheta = 0
-    ls = 1
     
     while True:
         #2.
@@ -153,26 +199,38 @@ def match_model_to_target(Y, xbar, P):
     
         #4.
         y = lm.transform_shape_inv(Y,tx, ty, s, theta)
+        
+        #img = io.get_objectspace_img()
+        #draw.draw_aligned_contours(img,x)
     
         #5
         yprime = y / ( np.dot(y.flatten(),xbar.flatten()))
+        
+        #draw.draw_aligned_contours(img,xbar)
+        #io.show_on_screen(img,1)
     
         #6
         lb = b
         b = np.dot(P.T,(yprime - xbar)) 
-        if ((b - lb < conv_thresh).all() and tx - ltx < conv_thresh and 
-            ty - lty < conv_thresh and s - ls < conv_thresh and theta - ltheta < conv_thresh):
+        if ((abs(b - lb) < conv_thresh).all() and abs(tx - ltx) < conv_thresh and 
+            abs(ty - lty) < conv_thresh and abs(s - ls) < conv_thresh and abs(theta - ltheta) < conv_thresh):
             break;
     
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    wollah = io.get_enhanced_img(1)
-    imges = io.get_all_gradient_img(1)
-    marks = io.read_all_landmarks_by_orientation(0,1)
-    points = srasm(wollah, imges, marks,0, 10, 5)
-    owollah = io.greyscale_to_colour(wollah)
-    draw.draw_contour(owollah,points, thicc=2)
+    wollah = io.get_enhanced_img(4)
+    imges = io.get_all_gradient_img(4)
+    marks = io.read_all_landmarks_by_orientation(0,4)
+    points = srasm2(wollah, imges, marks,0, 5, 5)
+    owollah = io.greyscale_to_colour(pp.apply_sobel(wollah))
+    
+    marks2 = io.read_all_landmarks_by_orientation(0)
+    ground = np.reshape(marks2[:,3],(marks2[:,3].size,1))
+    ground = lm.transform_shape(ground,-1150,-500,1,0)
+    draw.draw_contour(owollah,ground,color=(0,0,255), thicc=1)
+    
+    draw.draw_contour(owollah,points, thicc=1)
     io.show_on_screen(owollah,1)
     
     
