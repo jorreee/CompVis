@@ -108,6 +108,8 @@ def get_statistical_model_new(imgs,marks,k):
     for i in range(26):
         normals = np.append(normals,get_normals(np.reshape(marks[:,i - 1],(marks[:,i - 1].size,1))))
     normals = np.reshape(normals,(normals.size / 26,26),'F')  
+    means = []
+    covs = []
     for i in range(half):
         gradvals = np.array([])
         for j in range(26):
@@ -119,7 +121,12 @@ def get_statistical_model_new(imgs,marks,k):
         gradvals = gradvals.reshape(26,2*k+1)
         mean = np.mean(gradvals,0)
         cov = np.cov(gradvals.T)
-    
-    #Alle mean en covs moeten nog op dit niveau opgevangen worden en teruggegeven worden
+        means.append(mean)
+        covs.append(cov)
+  
+    means = np.array(means)
+    covs = np.array(covs)  
+
+    return means, covs
 
         

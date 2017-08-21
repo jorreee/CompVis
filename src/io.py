@@ -137,7 +137,7 @@ def read_all_landmarks_by_tooth(toothi):
 #     (..., ..., ..., ...)
 #
 # number of rows is a multiple of 80 (80 coordinates per landmark file)
-def read_all_landmarks_by_orientation(toothies, excepti=-1):
+def read_all_landmarks_by_orientation(toothies, excepti=-100):
     ls = []
     #for l in range(28):
      #   ls.append([])

@@ -49,7 +49,7 @@ def get_centralisation_old(img, yval):
 def get_centralisation(img):
     lines, xoffset = hough(img)
     #draw.draw_hough_lines(img,lines)
-    #io.show_on_screen(img,1)
+    #io.show_on_screen(io.greyscale_to_colour(img),1)
     #print xoffset
     return xoffset
 
