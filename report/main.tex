@@ -4,6 +4,7 @@
 \usepackage{url}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{subcaption}
 \begin{document}
  
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}}     % Horizontal rule
@@ -44,7 +45,58 @@
 
 \section{Radiograph pre-processing}
 
-\todo[inline]{TODO: Joran}
+Dental radiographs are inherently noisy and contain too much information when just focusing on locating the upper and lower incisors.
+For instance, all the teeth (not just the incisors), the jaw and the nose are present in the radiographs.
+To reduce these radiographs to a more suitable size for our application, we crop them based on domain knowledge so that only the smaller region around the four incisors remains.
+
+After the size reduction, the radiographs still need to be de-noised so that it's easier for our algorithm to detect the edges.
+We achieve this by using the technique proposed in \textit{Noise Removal and Contrast Enhancement for X-Ray Images} by Huang et al \cite{JBEMI1893}.
+The algorithm proposed by Huang et al is visualised in Figure \ref{preprocessalgo}. This technique first starts off by applying an adaptive median filter to reduce the impulsive (salt-and-pepper) noise, after which a bilateral filter is used to suppress the Gaussian noise while also preserving the edges of the image.
+After the noise suppression step, the radiograph is sharpened by a mathematical morphology, here a top hat and bottom hat transform.
+The top hat transform enhances the brighter regions of the radiograph, whereas the bottom hat enhances the darker regions.
+Finally, the contrast of the radiograph is enhanced by applying a contrast limited adaptive histogram equalization (CLAHE).
+To detect the edges of the dental radiograph, a Sobel operator is used, detecting the gradients in the x and y direction.
+The results of applying the different pre-processing steps on a dental radiograph can be observed in Figure \ref{preprocess}. 
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\linewidth]{preprocess/algorithm.png}
+  \caption{
+		The algorithm proposed by Huang et al \cite{JBEMI1893} for denoising dental radiographs. The algorithm has four steps, with a top hat transform and a bottom hat transform representing the mathematical morphology step. } \label{preprocessalgo}
+\end{figure}
+
+\begin{figure}
+  \centering
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{preprocess/original.png}
+		\subcaption{Cropped}
+	\end{minipage}
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{preprocess/median.png}
+		\subcaption{Median filter}
+	\end{minipage}
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{preprocess/bilateral.png}
+		\subcaption{Bilateral Filter}
+	\end{minipage}
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{preprocess/hats.png}
+		\subcaption{Top and Bottom hat}
+	\end{minipage}
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{preprocess/clahe.png}
+		\subcaption{CLAHE}
+	\end{minipage}
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{preprocess/gradients.png}
+		\subcaption{Edges (Sobel)}
+	\end{minipage}
+  \caption{
+		The results of the different pre-processing steps visualised when applied on dental radiograph 3.
+		(a) shows the original image after cropping, (b) shows (a) after applying the adaptive median filter, (c) adds the bilateral filter onto the result of (b), (d) performs the mathematical morphology (top hat and bottom hat) on (c), and (e) finally applies CLAHE. A Sobel operator is used to detect the edges, which is visualised in (f).} \label{preprocess}
+\end{figure}
+
 
 \section{Fitting model to image}
 
@@ -60,5 +112,8 @@
 \section{Conclusion}
 
 \todo[inline]{TODO: Tim, if even necessary after evaluation?}
+
+\bibliography{references}
+\bibliographystyle{plain}
 
 \end{document}
