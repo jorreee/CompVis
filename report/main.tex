@@ -5,6 +5,7 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{subcaption}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 \begin{document}
  
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}}     % Horizontal rule
@@ -100,14 +101,14 @@ The results of applying the different pre-processing steps on a dental radiograp
 
 
 \section{Fitting model to image}
-To fit our model to an image, we have to find the model instance $x =T_{(tx,ty,s,\theta)}(\bar{x} + Pb)$ that most accurately aligns with the incisors in the image.
-This translates to finding the pose parameters $T_{(tx,ty,s,\theta)}$ and the shape parameters $b$.
+To fit our model to an image, we have to find the model instance $x =T_{(X_t,Y_t,s,\theta)}(\bar{x} + Pb)$ that most accurately aligns with the incisors in the image.
+This translates to finding the pose parameters $T_{(X_t,Y_t,s,\theta)}$ and the shape parameters $b$.
 This is achieved in two steps: In the first step, an initial estimate for the pose parameters is obtained, which is discussed in Section \ref{subsec:initial} . The second step finally fits the model to the image by applying the Active Shape Model algorithm, which is discussed in Section \ref{subsec:ASM}
 
 \subsection{Initial pose estimate}
 \label{subsec:initial}
 
-To determine an initial estimate for the pose parameters $T_{(tx,ty,s,\theta)}$, we need to find an estimate for the horizontal offset $tx$, the vertical offset $ty$, the scale $s$ and the rotation $\theta$.
+To determine an initial estimate for the pose parameters $T_{(X_t,Y_t,s,\theta)}$, we need to find an estimate for the horizontal offset $X_t$, the vertical offset $Y_t$, the scale $s$ and the rotation $\theta$.
 
 \paragraph{Scale and rotation}
 
@@ -115,14 +116,14 @@ To find an initial estimate for the scale and rotation, we use domain knowledge.
 
 \paragraph{Vertical offset}
 
-To find the vertical offset $ty$, we utilise the jaw separation of the radiograph.
+To find the vertical offset $Y_t$, we utilise the jaw separation of the radiograph.
 This is accomplished by first finding the jaw separation that separates the upper incisors from the lower incisors, which corresponds to the pixel row that has the lowest total intensity value. After having found this separation, a small region above and below this separation is considered to locate the upper and lower offset where the teeth actually start. This is achieved by looking at the pixel row with the highest gradient in this region, which is caused by the transition from the black background to the white teeth.
 This technique was able to correctly determine the vertical offset for 12/14 images for the upper landmarks and 13/14 images for the lower landmarks.
 The result of locating the vertical offset can be observed in Figure \ref{init}(a).
 
 \paragraph{Horizontal offset}
 
-To find the horizontal offset $tx$, we use a hough line transform to detect the boundary between the middle incisors.
+To find the horizontal offset $X_t$, we use a hough line transform to detect the boundary between the middle incisors.
 For the upper incisors, a small region above the vertical offset is considered, near the center of the image.
 A hough line transform is applied on this small region to detect the boundaries between the different teeth.
 The line closest to the middle of this region then represents the boundary between the middle incisors, which we use as the horizontal offset.
@@ -163,6 +164,43 @@ This method was able to correctly determine the horizontal offset for 13/14 imag
 
 \subsection{The ASM algorithm}
 \label{subsec:ASM}
+
+The Active Shape Model algorithm we use to fit the model to an image closely follows the algorithm as it is described in Cootes et al \cite{cootes2000introduction}. The algorithm is reproduced here in Algorithm \ref{algo:asm}.
+
+\begin{algorithm}
+%\DontPrintSemicolon % Some LaTeX compilers require you to use \dontprintsemicolon    instead
+Examine a region of the image around each point {$\textbf{X}_i$} to find the best nearby match for the point $\textbf{X}'_i$\\
+Update the parameters $(X_t,Y_t,s,\theta,\textbf{b})$ to best fit the new found points \textbf{X} \\
+Apply constraints to the parameters, \textbf{b}, to ensure plausible shapes (limit so $| b_i | < 3 \sqrt{\lambda_i}$)  \\
+Repeat until convergence
+\caption{Active Shape Model Algorithm}
+\label{algo:asm}
+\end{algorithm}
+
+For the first step of the algorithm, we use a grey level model as proposed by Cootes et al \cite{cootes2000introduction}.
+This is achieved by sampling $k$ pixels along the normal of a landmark on both sides, resulting in a slice with the size of $2k + 1$. This is repeated for every landmark point on every training image, after which it is combined into a statistical model for each landmark point.
+The result is a mean sample and a covariance matrix for each landmark.
+When looking for a new landmark point, $m > k$ pixels are sampled along the normal of a landmark point of the current estimate.
+The Mahalanobis distance between the profile is then calculated to find the best nearby match.
+In our implementation, some of our covariance matrices of the grey level models happened to be singular, causing the Mahalanobis distance to fail.
+To alleviate this issue, we used the Moore–Penrose pseudoinverse instead of the normal inverse.
+For the covariance matrices that were not singular, using the inverse or the pseudoinverse resulted in the same best nearby match, thus suggesting that these can be interchanged for our application.
+
+For the second step of the algorithm, we used Protocol 1 as it is described by Cootes et al \cite{cootes2000introduction}.
+
+\paragraph{Multi-resolution framework}
+We implemented our ASM algorithm in a multi-resolution framework to improve the performance of our algorithm.
+We constructed a two level Gaussian image pyramid, since results diminished when going beyond two levels.
+This allows the algorithm to first find an estimate in a coarser low resolution image, after which it is able to further fine-tune the result in the higher resolution image.
+
+\paragraph{Stopping condition}
+
+To determine if the ASM algorithm has converged at the current resolution, we check whether $>90\%$ of the newly proposed landmark points fall in the central $50\%$ of the $2m + 1$ slice among the previous landmark position.
+We only check this for the crowns of the teeth however, as it is a lot harder for the roots to converge due to the absence of clearly defined edges.
+We also allow for a maximum of 10 iterations per resolution level, as the algorithm might end up diverging when ran for a large amount of iterations.
+
+
+
 
 \section{Evaluation}
 
