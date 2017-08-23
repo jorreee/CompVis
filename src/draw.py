@@ -5,10 +5,24 @@ import landmarks as lms
 import matplotlib.pyplot as plt
 import io as io
 
-lengthn = 160
+# Takes a pixel coordinate and colors it in
+def draw_pixel(img,coords,color=(255,0,0)):
+    # if (coords[0] < 0 or coords[0] >= img.shape[0] or coords[1] < 0 or coords[1] >= img.shape[1]): 
+    #     #print 'Value fell outside range of image: ' + str(coords) + ' on img ' + str(img.shape)
+    #     return None
+    img[coords[1],coords[0]] = [color[0],color[1],color[2]]    
+    return None
+
+# Takes a pixel coordinate and colors it in
+def draw_square(img,coords):
+    # if (coords[0] < 0 or coords[0] >= img.shape[0] or coords[1] < 0 or coords[1] >= img.shape[1]): 
+    #     #print 'Value fell outside range of image: ' + str(coords) + ' on img ' + str(img.shape)
+    #     return None
+    img[int(coords[1,0]):int(coords[1,1]),int(coords[0,0]):int(coords[0,1])] = [0,0,0]    
+    return None
+
 # Takes a column vector and interprets it as all x coordinates followed by all y coordinates, then draws a line between the points on the given image
 def draw_contour(img,lm,color=(255,0,0),thicc=1):
-#    for ind in range(lengthn-1):
     half = lm.size/2
     lpts = np.reshape(lm,(half,2),'F')
     for ind in range(len(lpts)):

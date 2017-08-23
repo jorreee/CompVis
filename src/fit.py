@@ -10,6 +10,7 @@ import io as io; reload(io)
 import init as init; reload(init)
 import draw as draw; reload(draw)
 from numpy import linalg as LA
+import matplotlib.path as mppath
 
 # Finds the new landmarks points by using the grey level model of a certain shape
 def find_new_points(imgtf, shapeo, means, covs, k, m, orient):
@@ -53,7 +54,7 @@ def find_new_points(imgtf, shapeo, means, covs, k, m, orient):
         shape[i] = new_point
     #draw.draw_contour(col,shape,(0,0,255))
     #io.show_on_screen(col,1)
-    print str(float(counter) / (shape.size/4))
+    #print str(float(counter) / (shape.size/4))
     if float(counter) / (shape.size/4) < 0.1:
         stop = True
     shape = np.reshape(shape,(shape.size, 1),'F')  
@@ -67,16 +68,16 @@ def asm(imgtf, means, covs, b, tx, ty, s, theta, k, m, stdvar, mean, eigenvecs, 
         approx, stop = find_new_points(imgtf, shapetf, means, covs, k, m, orient)
         
         if stop:
-            print i
+            print '  Stopped at iteration ' + str(i) + ' out of ' + str(maxiter) + ' maximum.'
             break
         b, tx, ty, s, theta = match_model_to_target(approx, mean, eigenvecs)
         
         #Check for plausible shapes
-        for i in range(b.size):
-            b[i, 0] = max(min(b[i, 0],3*stdvar[i]),-3*stdvar[i])
+        for p in range(b.size):
+            b[p, 0] = max(min(b[p, 0],3*stdvar[p]),-3*stdvar[p])
         
         if i == maxiter - 1:
-            print i
+            print '  Completed max number of iterations: ' + str(i + 1)
             
     return b, tx, ty, s, theta
 
@@ -128,7 +129,7 @@ def srasm2(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
     return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),ntx * 2,nty * 2,nsc * 2,itheta)
 
 
-def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
+def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter, resdepth = 1):
     lms,_ = lm.procrustes(marks)
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
     stdvar = np.std(lm_reduced, axis=1)
@@ -143,12 +144,16 @@ def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
     itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
     b = np.zeros((modes,1))
     
+    print ''
+    print 'Starting multi-resolution fitting procedure for orientation ' + str(orient)
+    print '--------'
     imgtf = pp.apply_sobel(enhimgtf)
-    for i in range(2):
+    for i in range(resdepth + 1):
+        print 'Step ' + str(i) + ':'
         edgies = edgeimgs
         limgtf =  imgtf
         j = 0
-        while 1 - i > j:
+        while resdepth - i > j:
             limgtf = cv2.pyrDown(limgtf)
             edgies = np.array(map(lambda x: cv2.pyrDown(x),edgies))
             smallermarks = np.array([])
@@ -162,10 +167,10 @@ def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
         #draw.draw_contour(wollah,ground,color=(0,0,255), thicc=1)
         #io.show_on_screen(wollah,1)
         means, covs = gl.get_statistical_model_new(edgies,smallermarks,k)
-        b, ntx, nty, nsc, itheta = asm(limgtf, means, covs, b, float(itx) / math.pow(2.0,(1-i)), float(ity) / math.pow(2.0,(1-i)), float(isc) / math.pow(2.0,(1-i)), itheta, k, m, stdvar, mean, eigenvecs, maxiter, orient)
-        itx = ntx * math.pow(2.0,(1-i))
-        ity = nty * math.pow(2.0,(1-i))
-        isc = nsc * math.pow(2.0,(1-i))
+        b, ntx, nty, nsc, itheta = asm(limgtf, means, covs, b, float(itx) / math.pow(2.0,(resdepth-i)), float(ity) / math.pow(2.0,(resdepth-i)), float(isc) / math.pow(2.0,(resdepth-i)), itheta, k, m, stdvar, mean, eigenvecs, maxiter, orient)
+        itx = ntx * math.pow(2.0,(resdepth-i))
+        ity = nty * math.pow(2.0,(resdepth-i))
+        isc = nsc * math.pow(2.0,(resdepth-i))
         
     return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),itx,ity,isc,itheta)
     
@@ -175,6 +180,12 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
     colgradimg = io.greyscale_to_colour(io.get_img(imgind))
     #colgradimg = io.greyscale_to_colour(pp.apply_sobel(img))
     
+    # Init evaluation
+    upper = None
+    upperground = None
+    lower = None
+    lowerground = None
+    
     if orientation != 1:
         marks = io.read_all_landmarks_by_orientation(0,imgind)
         if multires:
@@ -183,15 +194,14 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
             upper = srasm2(img, imges, marks,0, k, m, modes, maxiter)
         draw.draw_contour(colgradimg,upper, thicc=1)
         
+        allmarks = io.read_all_landmarks_by_orientation(0)
+        upperground = None
+        upperground = np.reshape(allmarks[:,imgind - 1],(allmarks[:,imgind - 1].size,1))
+        upperground = lm.transform_shape(upperground,-1150,-500,1,0)
+            
         if showground:
-            allmarks = io.read_all_landmarks_by_orientation(0)
-            upperground = None
-            upperground = np.reshape(allmarks[:,imgind - 1],(allmarks[:,imgind - 1].size,1))
-            upperground = np.reshape(allmarks[:,imgind - 1],(allmarks[:,imgind - 1].size,1))
-            upperground = lm.transform_shape(upperground,-1150,-500,1,0)
             draw.draw_contour(colgradimg,upperground,color=(0,255,0), thicc=1)
 
-        
     if orientation != 0:
         marks = io.read_all_landmarks_by_orientation(1,imgind)
         if multires:
@@ -200,17 +210,131 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
             lower = srasm2(img, imges, marks,1, k, m, modes, maxiter)            
         draw.draw_contour(colgradimg,lower, thicc=1)
         
+        allmarks = io.read_all_landmarks_by_orientation(1)
+        lowerground = None
+        lowerground = np.reshape(allmarks[:,imgind - 1],(allmarks[:,imgind - 1].size,1))
+        lowerground = lm.transform_shape(lowerground,-1150,-500,1,0)
         if showground:
-            allmarks = io.read_all_landmarks_by_orientation(1)
-            lowerground = None
-            lowerground = np.reshape(allmarks[:,imgind - 1],(allmarks[:,imgind - 1].size,1))
-            lowerground = lm.transform_shape(lowerground,-1150,-500,1,0)
             draw.draw_contour(colgradimg,lowerground,color=(0,255,0), thicc=1)
     
-          
     io.show_on_screen(colgradimg,1)
-    cv2.imwrite("result.png",colgradimg)
+    cv2.imwrite("result_contour.png",colgradimg)
+    
+    dumpimg = io.greyscale_to_colour(io.get_img(imgind))
+    evaluate_results(upper, upperground, lower, lowerground, True, dumpimg)
+    io.show_on_screen(dumpimg,1)
+    cv2.imwrite("result_surface.png",dumpimg)
     return None
+    
+def evaluate_results(upo, uprefo, lowo, lowrefo, showResults=False, img=None):
+    numpts = upo.size / 2
+    
+    up = np.reshape(np.copy(upo),(numpts, 2),'F')
+    upref = np.reshape(np.copy(uprefo),(numpts, 2),'F')
+    low = np.reshape(np.copy(lowo),(numpts, 2),'F')
+    lowref = np.reshape(np.copy(lowrefo),(numpts, 2),'F')
+    
+    print ''
+    print '--- Evaluatie ---'
+    
+    #Euclidische afstand
+    uptot = 0
+    lowtot = 0
+    for i in range(numpts):
+        uptot += math.hypot(up[i,0] - upref[i,0], up[i,1] - upref[i,1])
+        lowtot += math.hypot(low[i,0] - lowref[i,0], low[i,1] - lowref[i,1])
+    print '    1) Average Euclidean distance to ground truth: ' + str((uptot + lowtot) / numpts) 
+    print '                                                   ('+ str(uptot*2.0 / numpts) +' upper,' 
+    print '                                                    '+ str(lowtot*2.0 / numpts) +' lower)'
+    
+    # Contained points 
+    numTP = 0
+    numFP = 0
+    numFN = 0
+    inCount = 0
+    inrefCount = 0
+    for i in range(4):
+        # UPPER
+        #
+        #Bereken de bounding box van ground en gevonden mark
+        toothiup = np.concatenate((up[(40*i):(40*(i+1)),:],upref[(40*i):(40*(i+1)),:]))
+        bbup = bbox(toothiup)
+        #Maak een Path object van de ground en gevonden mark
+        upp = mppath.Path(up[(40*i):(40*(i+1)),:])      
+        uprefp = mppath.Path(upref[(40*i):(40*(i+1)),:])
+        #Loop door alle pixels in de bounding box
+        for r in range(int(bbup[1,0]),int(bbup[1,1])):
+            for c in range(int(bbup[0,0]),int(bbup[0,1])):
+                #Klassificeer
+                if uprefp.contains_point(np.array([c,r])):
+                    inrefCount += 1
+                    if upp.contains_point(np.array([c,r])):
+                        inCount += 1
+                        numTP += 1
+                        if showResults:
+                            draw.draw_pixel(img,np.array([c,r]),(10,180,10))
+                    else:
+                        numFN += 1
+                        if showResults:
+                            draw.draw_pixel(img,np.array([c,r]),(10,180,180))
+                elif upp.contains_point(np.array([c,r])):
+                    inCount += 1
+                    numFP += 1
+                    if showResults:
+                        draw.draw_pixel(img,np.array([c,r]),(10,10,180))
+                    
+        # LOWER
+        #
+        #Bereken de bounding box van ground en gevonden mark
+        toothilow = np.concatenate((low[(40*i):(40*(i+1)),:],lowref[(40*i):(40*(i+1)),:]))
+        bblow = bbox(toothilow)
+        #Maak een Path object van de ground en gevonden mark
+        lowp = mppath.Path(low[(40*i):(40*(i+1)),:])      
+        lowrefp = mppath.Path(lowref[(40*i):(40*(i+1)),:])
+        #Loop door alle pixels in de bounding box
+        for r in range(int(bblow[1,0]),int(bblow[1,1])):
+            for c in range(int(bblow[0,0]),int(bblow[0,1])):
+                #Klassificeer
+                if lowrefp.contains_point(np.array([c,r])):
+                    inrefCount += 1
+                    if lowp.contains_point(np.array([c,r])):
+                        inCount += 1
+                        numTP += 1
+                        if showResults:
+                            draw.draw_pixel(img,np.array([c,r]),(10,180,10))
+                    else:
+                        numFN += 1
+                        if showResults:
+                            draw.draw_pixel(img,np.array([c,r]),(10,180,180))
+                elif lowp.contains_point(np.array([c,r])):
+                    inCount += 1
+                    numFP += 1
+                    if showResults:
+                        draw.draw_pixel(img,np.array([c,r]),(10,10,180))
+    
+    print '    2) Surface analysis: ' + str(numTP / float(inrefCount)) + ' percent of ground truth surface found'
+    print '                         ' + str(numFN / float(inrefCount)) + ' percent of ground truth surface missed'
+    print '                         ' + str(numTP / float(inCount)) + ' percent of solution surface within ground'
+    print '                         ' + str(numFP / float(inCount)) + ' percent of solution surface outside ground'
+    
+    return None
+    
+# Geïnspireerd op https://stackoverflow.com/questions/12443688/calculating-bounding-box-of-numpy-array
+def bbox(points):
+    """
+    [xmin xmax]
+    [ymin ymax]
+    """
+    a = np.zeros((2,2))
+    a[:,0] = np.min(points, axis=0)
+    a[:,1] = np.max(points, axis=0)
+    
+    a[0,0] = int(math.floor(a[0,0]))
+    a[1,0] = int(math.floor(a[1,0]))
+    a[0,1] = int(math.ceil(a[0,1]))
+    a[1,1] = int(math.ceil(a[1,1]))
+    
+    return a
     
 #def srasm4(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
 #    lms,_ = lm.procrustes(marks)
@@ -271,7 +395,7 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    match_image(1, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 10, multires = True)
+    match_image(8, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 10, multires = True)
     
     #img = cv2.flip(io.get_enhanced_img(1),1)
 #    img = io.get_enhanced_img(1)
