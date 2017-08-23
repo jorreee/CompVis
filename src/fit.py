@@ -271,7 +271,7 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    match_image(5, orientation = 2, showground = False, modes = 5, k = 5, m = 10, maxiter = 0, multires = False)
+    match_image(1, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 10, multires = True)
     
     #img = cv2.flip(io.get_enhanced_img(1),1)
 #    img = io.get_enhanced_img(1)

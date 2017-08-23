@@ -22,13 +22,6 @@ def get_jaw_separation(img):
     upperyf = uppery + sep-50 + 250
     loweryf = lowery + sep + 250
     
-    #colorimg = io.greyscale_to_colour(smallerimg)
-    #draw.draw_jaw_separation(colorimg,sep)
-    #draw.draw_jaw_separation(colorimg,uppery + sep-50,(0,255,0))
-    #draw.draw_jaw_separation(colorimg,lowery + sep,(0,255,0))
-    #cv2.imwrite("sep.png",colorimg)
-    #io.show_on_screen(colorimg)
-    
     return sep, upperyf, loweryf
 
 def get_centralisation_old(img, yval):
@@ -58,9 +51,7 @@ def get_centralisation(img):
     lines, xoffset = hough(img)
     #coli = io.greyscale_to_colour(img)
     #draw.draw_hough_lines(coli,lines)
-    #cv2.imwrite("down.png",coli)
     #io.show_on_screen(io.greyscale_to_colour(img),1)
-    #print xoffset
     return xoffset
 
 def hough(img):

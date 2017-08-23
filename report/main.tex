@@ -99,9 +99,37 @@ The results of applying the different pre-processing steps on a dental radiograp
 
 
 \section{Fitting model to image}
-
+To fit our model to an image, we have to find the model instance $x =T_{(tx,ty,s,\theta)}(\bar{x} + Pb)$ that most accurately aligns with the incisors in the image.
+This translates to finding the pose parameters $T_{(tx,ty,s,\theta)}$ and the shape parameters $b$.
+This is achieved in two steps: In the first step, an initial estimate for the pose parameters is obtained, which is discussed in Section \ref{subsec:initial} . The second step finally fits the model to the image by applying the Active Shape Model algorithm, which is discussed in Section \ref{subsec:ASM}
 
 \subsection{Initial pose estimate}
+\label{subsec:initial}
+
+To determine an initial estimate for the pose parameters $T_{(tx,ty,s,\theta)}$, we need to find an estimate for the horizontal offset $tx$, the vertical offset $ty$, the scale $s$ and the rotation $\theta$.
+
+\paragraph{Scale and rotation}
+
+To find an initial estimate for the scale and rotation, we use domain knowledge. A good scale was empirically determined, and the rotation is chosen so that the teeth are positioned vertically.
+
+\paragraph{Vertical offset}
+
+To find the vertical offset $ty$, we utilise the jaw separation of the radiograph.
+This is accomplished by first finding the jaw separation that separates the upper incisors from the lower incisors, which corresponds to the pixel row that has the lowest total intensity value. After having found this separation, a small region above and below this separation is considered to locate the upper and lower offset where the teeth actually start. This is achieved by looking at the pixel row with the highest gradient in this region, which is caused by the transition from the black background to the white teeth.
+This technique was able to correctly determine the vertical offset for 12/14 images for the upper landmarks and 13/14 images for the lower landmarks.
+The result of locating the vertical offset can be observed in Figure \ref{init}(a).
+
+\paragraph{Horizontal offset}
+
+To find the horizontal offset $tx$, we use a hough line transform to detect the boundary between the middle incisors.
+For the upper incisors, a small region above the vertical offset is considered, near the center of the image.
+A hough line transform is applied on this small region to detect the boundaries between the different teeth.
+The line closest to the middle of this region then represents the boundary between the middle incisors, which we use as the horizontal offset.
+The results of this can be observed in Figure \ref{init}(b).
+The method works analogously for the lower incisors, but now a small region below the vertical offset is considered. 
+This is visualised in Figure \ref{init}(c).
+This method was able to correctly determine the horizontal offset for 13/14 images for the upper landmarks and 13/14 images for the lower landmarks.
+
 
 \begin{figure}
   \centering
@@ -128,11 +156,12 @@ The results of applying the different pre-processing steps on a dental radiograp
   \caption{
 		The process of getting the initial pose estimate. (a) shows the jaw separation lines for radiograph 11, where the red line shows the row of pixels with the lowest intensity and the green lines show the resulting upper and lower jaw separations.
 		(b) and (c) show the hough lines for the upper and lower incisors respectively for radiograph 11.
-		(d) shows the resulting initial estimate for radiograph 11, which is a really good fit, and (e) shows the initial estimate for radiograph 3.
-		The estimate for radiograph 3 is a lot worse due to the off-centered position of the upper incisors.} \label{init}
+		(d) shows the resulting initial estimate for radiograph 11, which is a really good fit, and (e) shows the initial estimate for radiograph 5.
+		The estimate for radiograph 5 is a lot worse due to the off-centered position of the upper incisors.} \label{init}
 \end{figure}
 
 \subsection{The ASM algorithm}
+\label{subsec:ASM}
 
 \section{Evaluation}
 
