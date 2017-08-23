@@ -172,7 +172,8 @@ def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
 def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 50, multires = True):
     img = io.get_enhanced_img(imgind)
     imges = io.get_all_gradient_img(imgind)
-    colgradimg = io.greyscale_to_colour(pp.apply_sobel(img))
+    colgradimg = io.greyscale_to_colour(io.get_img(imgind))
+    #colgradimg = io.greyscale_to_colour(pp.apply_sobel(img))
     
     if orientation != 1:
         marks = io.read_all_landmarks_by_orientation(0,imgind)
@@ -208,6 +209,7 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
     
           
     io.show_on_screen(colgradimg,1)
+    cv2.imwrite("result.png",colgradimg)
     return None
     
 #def srasm4(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
@@ -269,7 +271,7 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    match_image(14, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 10, multires = True)
+    match_image(5, orientation = 2, showground = False, modes = 5, k = 5, m = 10, maxiter = 0, multires = False)
     
     #img = cv2.flip(io.get_enhanced_img(1),1)
 #    img = io.get_enhanced_img(1)

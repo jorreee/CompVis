@@ -100,9 +100,38 @@ The results of applying the different pre-processing steps on a dental radiograp
 
 \section{Fitting model to image}
 
-\todo[inline]{TODO: Joran}
 
 \subsection{Initial pose estimate}
+
+\begin{figure}
+  \centering
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{init/sep.png}
+		\subcaption{Jaw separation}
+	\end{minipage}
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{init/up.png}
+		\subcaption{Upper hough lines}
+	\end{minipage}
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{init/down.png}
+		\subcaption{Lower hough lines}
+	\end{minipage}
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{init/initial.png}
+		\subcaption{Result for image 11}
+	\end{minipage}
+	\begin{minipage}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{init/initial6.png}
+		\subcaption{Result for image 5}
+	\end{minipage}
+  \caption{
+		The process of getting the initial pose estimate. (a) shows the jaw separation lines for radiograph 11, where the red line shows the row of pixels with the lowest intensity and the green lines show the resulting upper and lower jaw separations.
+		(b) and (c) show the hough lines for the upper and lower incisors respectively for radiograph 11.
+		(d) shows the resulting initial estimate for radiograph 11, which is a really good fit, and (e) shows the initial estimate for radiograph 3.
+		The estimate for radiograph 3 is a lot worse due to the off-centered position of the upper incisors.} \label{init}
+\end{figure}
+
 \subsection{The ASM algorithm}
 
 \section{Evaluation}
