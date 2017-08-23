@@ -85,14 +85,14 @@ def draw_slice(img,slicel):
     return None
 
 # Draws the jaw separation on an image   
-def draw_jaw_separation(img,yval):
+def draw_jaw_separation(img,yval,color=(0,0,255)):
     for ind in range(len(img[1,:]) - 1):
         cv2.line(img,
                 (ind,int(yval)),
                 ((ind + 1),
                 (int(yval))),
-                (255,0,0),
-                2);
+                color,
+                1);
     
     return None
     
@@ -102,7 +102,6 @@ def vec2graph(vec):
     cv2.waitKey(0)
     
 def draw_hough_lines(img,lines):
-    img = io.greyscale_to_colour(img)
     for rho,theta in lines:
         a = np.cos(theta)
         x0 = a*rho
@@ -113,7 +112,6 @@ def draw_hough_lines(img,lines):
         x2 = int(x0 - 1000*(-b))
         y2 = int(y0 - 1000*(a))
         cv2.line(img,(x1,y1),(x2,y2),(0,0,255),1)
-    io.show_on_screen(img)
     
     return None
 
