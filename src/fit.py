@@ -130,9 +130,46 @@ def srasm2(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
 
 
 def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter, resdepth = 1):
+###### TIJDELIJK VOOR REPORT
+    # imgr = io.greyscale_to_colour(io.get_img(1))
+    # draw.draw_square(imgr,np.array([[0, 700],[0, 930]]))
+    # for i in range(26):
+    #     shapei = draw.move_into_frame(np.copy(marks[:,i]))
+    #     draw.draw_contour(imgr,shapei,color=(150 - 4*i,222,20 + 9*i),thicc=2)
+    # 
+    # io.show_on_screen(imgr,1)
+    # if True:
+    #     return None
+###### EINDE TIJDELIJK
     lms,_ = lm.procrustes(marks)
+###### TIJDELIJK VOOR REPORT
+    # imgr = io.greyscale_to_colour(io.get_img(1))
+    # draw.draw_square(imgr,np.array([[0, 700],[0, 930]]))
+    # for i in range(26):
+    #     shapei = draw.make_object_space_visible(np.copy(lms[:,i]))
+    #     draw.draw_contour(imgr,shapei,color=(150 - 4*i,222,20 + 9*i),thicc=2)
+    # 
+    # io.show_on_screen(imgr,1)
+    # if True:
+    #     return None
+###### EINDE TIJDELIJK
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
     stdvar = np.std(lm_reduced, axis=1)
+###### TIJDELIJK VOOR REPORT
+    # imgr = io.greyscale_to_colour(io.get_img(1))
+    # for i in range(5):
+    #     draw.draw_square(imgr,np.array([[0, 700],[0, 930]]))
+    #     for k in range(3):
+    #         termsplus = np.zeros((5,1))
+    #         termsmin = np.zeros((5,1))
+    #         termsplus[i] = (k+1)*stdvar[i]
+    #         termsmin[i] = -1*(k+1)*stdvar[i]
+    #         draw.draw_contour(imgr,draw.make_object_space_visible(lm.pca_reconstruct(termsplus,mean,eigenvecs)),color=(10,63 + k*63,100),thicc=2)
+    #         draw.draw_contour(imgr,draw.make_object_space_visible(lm.pca_reconstruct(termsmin,mean,eigenvecs)),color=(10,100,63 + k*63),thicc=2)
+    #     
+    #     draw.draw_contour(imgr,draw.make_object_space_visible(mean),color=(0,230,230),thicc=3)
+    #     io.show_on_screen(imgr,1)
+###### EINDE TIJDELIJK
     
     croppedmarks = np.array([])
     for i in range(13):
@@ -235,7 +272,7 @@ def evaluate_results(upo, uprefo, lowo, lowrefo, showResults=False, img=None):
     lowref = np.reshape(np.copy(lowrefo),(numpts, 2),'F')
     
     print ''
-    print '--- Evaluatie ---'
+    print '--- Evaluation ---'
     
     #Euclidische afstand
     uptot = 0
@@ -395,7 +432,7 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    match_image(8, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 10, multires = True)
+    match_image(4, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 10, multires = True)
     
     #img = cv2.flip(io.get_enhanced_img(1),1)
 #    img = io.get_enhanced_img(1)

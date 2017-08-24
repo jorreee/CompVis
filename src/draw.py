@@ -18,7 +18,7 @@ def draw_square(img,coords):
     # if (coords[0] < 0 or coords[0] >= img.shape[0] or coords[1] < 0 or coords[1] >= img.shape[1]): 
     #     #print 'Value fell outside range of image: ' + str(coords) + ' on img ' + str(img.shape)
     #     return None
-    img[int(coords[1,0]):int(coords[1,1]),int(coords[0,0]):int(coords[0,1])] = [0,0,0]    
+    img[int(coords[1,0]):int(coords[1,1]),int(coords[0,0]):int(coords[0,1])] = [255,255,255]    
     return None
 
 # Takes a column vector and interprets it as all x coordinates followed by all y coordinates, then draws a line between the points on the given image
@@ -40,6 +40,15 @@ def draw_contour(img,lm,color=(255,0,0),thicc=1):
                 thicc);
     
     return None
+
+def move_into_frame(marks):
+    mn = np.copy(marks)
+    n = marks.size/2
+    for i in range(n):
+        mn[i] = mn[i] - 1150
+        mn[i + n] = mn[i + n] - 500
+    
+    return mn
     
 # Takes a matrix with landmarks as columns and draws them all on the given image
 def draw_all_contours(img,ls):
@@ -50,7 +59,7 @@ def draw_all_contours(img,ls):
 
 # Transform an object present in object space to make it visible in the object space image	
 def make_object_space_visible(ls):
-    return lms.transform_shape(ls,250,250,1003,0)
+    return lms.transform_shape(ls,350,250,2203,0)
 
 # Takes a matrix with aligned landmarks as column. Applies a scaling and translation transformation to them to be visible in an image and then draws the transformed landmarks on the given image
 def draw_aligned_contours(img,ls):
