@@ -35,13 +35,20 @@
 \setcounter{page}{1}
 
 \section{Introduction}
-\todo[inline]{TODO: Joran}
+
+This report discusses our solution for the Incisor Segmentation project for the Computer Vision course.
+The goal of this project was to develop a model based segmentation approach, capable of segmenting the upper and lower incisors in panoramic radiographs.
+We achieved this by utilizing the Active Shape Models approach, as it was first presented by Cootes et al \cite{cootes2000introduction}.
+This report is structured as follows: 
+Section \ref{sec:shape} starts of by discussing the deformable shape model, which is followed up by Section \ref{sec:preproc} concerning the pre-processing of the dental radiographs. Section \ref{sec:fitting} presents the actual model fitting algorithm, with the evaluation of the fitting presented in Section \ref{sec:eval}.
+Finally, we conclude our report in Section \ref{sec:concl}.
 
 \section{Shape Model}
+\label{sec:shape}
 \todo[inline]{TODO: Tim}
 We use two models in our algorithm. One describes the mean and variation of all four upper teeth (incisors 1-4), the other describes the lower teeth (incisors 5-8). 
 
-The choice for two models containing four incosors each, as opposed to one model per tooth, comes from two main reasons that both stem from simple empirical observations about the human dental structure. The first is that the upper and lower incisors are always found next to eachother and in the same order. Natural variations on the spacing between them, their height differences and sizes are all captured in our final model description. Our approach ensures that teeth will never be marked out of order within the model, even when some overlap. The second observation is that natural variations don't favor one side over the other and thus we expect a symmetric model. Including mirrored examples during training is one way to incorporate this information. Our model adds to the effect by also enforcing symmetry in the variation in spacing, height and size.
+The choice for two models containing four incisors each, as opposed to one model per tooth, comes from two main reasons that both stem from simple empirical observations about the human dental structure. The first is that the upper and lower incisors are always found next to eachother and in the same order. Natural variations on the spacing between them, their height differences and sizes are all captured in our final model description. Our approach ensures that teeth will never be marked out of order within the model, even when some overlap. The second observation is that natural variations don't favor one side over the other and thus we expect a symmetric model. Including mirrored examples during training is one way to incorporate this information. Our model adds to the effect by also enforcing symmetry in the variation in spacing, height and size.
 
 The model construction happens in two steps, as described by Cootes in \cite{cootes2000introduction} (ignoring the labelling as it has been performed for us). First, we align all the shapes. This means making all example sets of four incisors (either all upper or all lower) neutral with regards to translation, rotation and scale. Afterwards, we perform a principal component analysis (PCA) on the aligned shapes to acquire a robust description of the average upper/lower incisors and the way they vary in shape. 
 
@@ -105,6 +112,7 @@ To determine the number of modes we need for the PCA, we provide a dynamic proce
 \end{figure}
 
 \section{Radiograph pre-processing}
+\label{sec:preproc}
 
 Dental radiographs are inherently noisy and contain too much information when just focusing on locating the upper and lower incisors.
 For instance, all the teeth (not just the incisors), the jaw and the nose are present in the radiographs.
@@ -160,6 +168,7 @@ The results of applying the different pre-processing steps on a dental radiograp
 
 
 \section{Fitting model to image}
+\label{sec:fitting}
 To fit our model to an image, we have to find the model instance $x =T_{(X_t,Y_t,s,\theta)}(\bar{x} + Pb)$ that most accurately aligns with the incisors in the image.
 This translates to finding the pose parameters $T_{(X_t,Y_t,s,\theta)}$ and the shape parameters $b$.
 This is achieved in two steps: In the first step, an initial estimate for the pose parameters is obtained, which is discussed in Section \ref{subsec:initial} . The second step finally fits the model to the image by applying the Active Shape Model algorithm, which is discussed in Section \ref{subsec:ASM}
@@ -247,9 +256,28 @@ For the covariance matrices that were not singular, using the inverse or the pse
 
 For the second step of the algorithm, we used Protocol 1 as it is described by Cootes et al \cite{cootes2000introduction}.
 
+These two steps are visualised in Figure \ref{asm}.
+
+\begin{figure}
+  \centering
+	\begin{minipage}[b]{0.48\linewidth}
+		\includegraphics[width=\linewidth]{asm/step1.png}
+		\subcaption{Step 1}
+	\end{minipage}
+	\begin{minipage}[b]{0.48\linewidth}
+		\includegraphics[width=\linewidth]{asm/step2.png}
+		\subcaption{Step 2}
+	\end{minipage}
+  \caption{
+		The two steps of the ASM algorithm for the first iteration of radiograph 11.
+		(a) shows the first step, where the green shape shows the initial estimate and the red shape shows the proposed new points.
+		(b) shows the second step, where the model is fitted to the red points, resulting in the blue shape.} \label{asm}
+\end{figure}
+
+
 \paragraph{Multi-resolution framework}
 We implemented our ASM algorithm in a multi-resolution framework to improve the performance of our algorithm.
-We constructed a two level Gaussian image pyramid, since results diminished when going beyond two levels.
+We constructed a two level Gaussian image pyramid, since returns diminished when going beyond two levels.
 This allows the algorithm to first find an estimate in a coarser low resolution image, after which it is able to further fine-tune the result in the higher resolution image.
 
 \paragraph{Stopping condition}
@@ -262,10 +290,12 @@ We also allow for a maximum of 10 iterations per resolution level, as the algori
 
 
 \section{Evaluation}
+\label{sec:eval}
 
 \todo[inline]{TODO: Tim}
 
 \section{Conclusion}
+\label{sec:concl}
 
 \todo[inline]{TODO: Tim, if even necessary after evaluation?}
 
