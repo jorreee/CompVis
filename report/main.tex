@@ -48,7 +48,7 @@ The model construction happens in two steps, as described by Cootes in \cite{coo
 \subsection{Shape alignment}
 Starting from the labelled set of images and their eight manually landmarked incisors, we group the upper and lower landmarks and combine them into one shape vector. This vector contains the coordinates of 160 ($= 4\times 40$ points per landmark) points. When testing the performance of our algorithm for a specific image, we remove it and its mirrored version from the training set. We are then left with 26 training examples per model (upper or lower) for an image.
 
-We take the first example as the initial mean shape estimate and normalize it. Using Procrustes analysis, we refine the estimate using the other examples until it converges. At the start of each refinement step we align all examples with the new mean so that when the procedure has converged, we have acquired a fully aligned set of examples. We see the process illustrated in Figure \ref{fig:align}. Notice that the slight tilt of the first example (and therefore also the initial mean estimate) has cascaded into the full alignment set. This can not be prevented using our technique.
+We take the first example as the initial mean shape estimate and normalize it. Using Procrustes analysis, we refine the estimate using the other examples until it converges. At the start of each refinement step we align all examples with the new mean so that when the procedure has converged, we have acquired a fully aligned set of examples. We see the process illustrated in Figure \ref{fig:align} when training for image 4. Notice that the slight tilt of the first example (and therefore also the initial mean estimate) has cascaded into the full alignment set. This can not be prevented using our technique.
 
 \begin{figure}
 	\centering
@@ -64,13 +64,21 @@ We take the first example as the initial mean shape estimate and normalize it. U
 		\includegraphics[width=0.4\linewidth]{shape/lower_aligned}
 		\caption{Model 2: lower incisors}
 	\end{subfigure}
-	\caption{Our two models before and after alignment. Examples 4 and 18 were left out. On the left we see the original landmarks simply superposed in one image, each with their own color gradient. On the right, we see the the aligned models with their same respective color. }
+	\caption{Our two models before and after alignment. Examples 4 and 18 (mirrored 4) were left out. On the left we see the original landmarks simply superposed in one image, each with their own color gradient. On the right, we see the the aligned models with their same respective color. }
 	\label{fig:align}
 \end{figure}
 
 \subsection{PCA}
 After aligning our training set, we want to extract statistical properties from it describing the mean shape of a model and the typical variation found within them. A principal component analysis delivers just that. We create a procedure that takes a training set of models and produces a PCA model of the set and a description of the training set in terms of said model (called the \emph{reduced training set}). The model is used throughout the algorithm to correct new estimated fits. The terms in the reduced training set are analysed to determine a plausible range for models. We confirm in Figure \ref{fig:stdvar} that (positive or negative) three times the standard deviation on each term captures the range of plausible shapes. 
 
+To determine the number of modes we need for the PCA, we provide a dynamic procedure. It first calculates all eigenvalues in descending order and then searches for the number of values needed to cover 95\% of the shape variation inside the training set. We plot the coverage per number of modes used to train for image 4 in Figure \ref{fig:coverage}. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.75\linewidth]{shape/coverage5}
+	\caption{Coverage plot for our two models. We see that we need 10 modes of our PCA in order to cover 95\% of shape variations in the training set. }
+	\label{fig:coverage}
+\end{figure}
 
 \begin{figure}
 	\centering
@@ -93,7 +101,7 @@ After aligning our training set, we want to extract statistical properties from 
 		\caption{Model 2: lower incisors}
 	\end{subfigure}
 	\caption{Principal components in order of our two models, excluding examples 4 and 18. The mean shape is shown in yellow. Each component is shown with a scaling between -3 and +3 times the standard deviation of the component. }
-	\label{fig:align}
+	\label{fig:stdvar}
 \end{figure}
 
 \section{Radiograph pre-processing}

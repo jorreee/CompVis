@@ -153,7 +153,12 @@ def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter, resdepth = 1)
     # if True:
     #     return None
 ###### EINDE TIJDELIJK
-    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
+    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(np.copy(lms), 26)
+    coverage, modes_needed = lm.get_num_eigenvecs_needed(eigenvals)
+    draw.vec2graph(coverage)
+    draw.vec2graph(0.95*np.ones(26))
+    # print modes_needed
+    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes_needed)
     stdvar = np.std(lm_reduced, axis=1)
 ###### TIJDELIJK VOOR REPORT
     # imgr = io.greyscale_to_colour(io.get_img(1))
@@ -179,7 +184,7 @@ def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter, resdepth = 1)
     croppedmarks = np.reshape(croppedmarks,(croppedmarks.size / 26,26),'F') 
     
     itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
-    b = np.zeros((modes,1))
+    b = np.zeros((modes_needed,1))
     
     print ''
     print 'Starting multi-resolution fitting procedure for orientation ' + str(orient)

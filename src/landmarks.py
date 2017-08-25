@@ -217,12 +217,14 @@ def get_num_eigenvecs_needed(eigenvals):
     num = 0
     tot = sum(eigenvals)
     last = 0
+    found = False
     for i in range(len(eigenvals)):
-        #num = num+1
+        if not found:
+            num = num+1
         gain = sum(eigenvals[0:i+1])/tot - last
         new = last+gain
-        print str(i) + ': ' + str(gain) + ' totalling ' + str(100*new) + '%'
+        # print str(i) + ': ' + str(gain) + ' totalling ' + str(100*new) + '%'
         last = new
-        #if sum(eigenvals[0:i+1])/tot > 0.95:
-         #   return num
-    return num
+        if not found and sum(eigenvals[0:i+1])/tot > 0.95:
+            found = True
+    return np.cumsum(eigenvals) / float(tot), num

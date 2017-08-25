@@ -60,6 +60,7 @@ def draw_all_contours(img,ls):
 # Transform an object present in object space to make it visible in the object space image	
 def make_object_space_visible(ls):
     return lms.transform_shape(ls,350,250,2203,0)
+    # return lms.transform_shape(ls,250,250,1003,0)
 
 # Takes a matrix with aligned landmarks as column. Applies a scaling and translation transformation to them to be visible in an image and then draws the transformed landmarks on the given image
 def draw_aligned_contours(img,ls):
