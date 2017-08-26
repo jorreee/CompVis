@@ -62,12 +62,14 @@ def find_new_points(imgtf, shapeo, means, covs, k, m, orient):
     
    
 def asm(imgtf, means, covs, b, tx, ty, s, theta, k, m, stdvar, mean, eigenvecs, maxiter, orient):
+    numit = -1
     for i in range(maxiter):                 
         shapetf = lm.pca_reconstruct(b,mean,eigenvecs)
         shapetf = lm.transform_shape(shapetf, tx, ty, s, theta)   
         approx, stop = find_new_points(imgtf, shapetf, means, covs, k, m, orient)
         
         if stop:
+            numit = i+1
             print '  Stopped at iteration ' + str(i) + ' out of ' + str(maxiter) + ' maximum.'
             break
         b, tx, ty, s, theta = match_model_to_target(approx, mean, eigenvecs)
@@ -77,9 +79,10 @@ def asm(imgtf, means, covs, b, tx, ty, s, theta, k, m, stdvar, mean, eigenvecs, 
             b[p, 0] = max(min(b[p, 0],3*stdvar[p]),-3*stdvar[p])
         
         if i == maxiter - 1:
+            numit = maxiter
             print '  Completed max number of iterations: ' + str(i + 1)
             
-    return b, tx, ty, s, theta
+    return b, tx, ty, s, theta, numit
 
 def srasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
     lms,_ = lm.procrustes(marks)
@@ -130,6 +133,7 @@ def srasm2(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
 
 
 def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter, resdepth = 1):
+    itervec = np.array([0,0])
 ###### TIJDELIJK VOOR REPORT
     # imgr = io.greyscale_to_colour(io.get_img(1))
     # draw.draw_square(imgr,np.array([[0, 700],[0, 930]]))
@@ -209,12 +213,12 @@ def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter, resdepth = 1)
         #draw.draw_contour(wollah,ground,color=(0,0,255), thicc=1)
         #io.show_on_screen(wollah,1)
         means, covs = gl.get_statistical_model_new(edgies,smallermarks,k)
-        b, ntx, nty, nsc, itheta = asm(limgtf, means, covs, b, float(itx) / math.pow(2.0,(resdepth-i)), float(ity) / math.pow(2.0,(resdepth-i)), float(isc) / math.pow(2.0,(resdepth-i)), itheta, k, m, stdvar, mean, eigenvecs, maxiter, orient)
+        b, ntx, nty, nsc, itheta, itervec[i] = asm(limgtf, means, covs, b, float(itx) / math.pow(2.0,(resdepth-i)), float(ity) / math.pow(2.0,(resdepth-i)), float(isc) / math.pow(2.0,(resdepth-i)), itheta, k, m, stdvar, mean, eigenvecs, maxiter, orient)
         itx = ntx * math.pow(2.0,(resdepth-i))
         ity = nty * math.pow(2.0,(resdepth-i))
         isc = nsc * math.pow(2.0,(resdepth-i))
         
-    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),itx,ity,isc,itheta)
+    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),itx,ity,isc,itheta), itervec
     
 def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 50, multires = True):
     img = io.get_enhanced_img(imgind)
@@ -227,11 +231,12 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
     upperground = None
     lower = None
     lowerground = None
+    itervec = np.array([0,0,0,0])
     
     if orientation != 1:
         marks = io.read_all_landmarks_by_orientation(0,imgind)
         if multires:
-            upper = mrasm(img, imges, marks,0, k, m, modes, maxiter)
+            upper, itervec[0:2] = mrasm(img, imges, marks,0, k, m, modes, maxiter)
         else:
             upper = srasm2(img, imges, marks,0, k, m, modes, maxiter)
         draw.draw_contour(colgradimg,upper, thicc=1)
@@ -247,7 +252,7 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
     if orientation != 0:
         marks = io.read_all_landmarks_by_orientation(1,imgind)
         if multires:
-            lower = mrasm(img, imges, marks,1, k, m, modes, maxiter)
+            lower, itervec[2:4] = mrasm(img, imges, marks,1, k, m, modes, maxiter)
         else:
             lower = srasm2(img, imges, marks,1, k, m, modes, maxiter)            
         draw.draw_contour(colgradimg,lower, thicc=1)
@@ -263,10 +268,10 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
     #cv2.imwrite("result_contour.png",colgradimg)
     
     dumpimg = io.greyscale_to_colour(io.get_img(imgind))
-    resultvec = evaluate_results(upper, upperground, lower, lowerground, True, dumpimg)
+    # evaluate_results(upper, upperground, lower, lowerground, True, dumpimg)
     cv2.imwrite(str(imgind) + "i" + str(maxiter) + '.png',dumpimg)
     #io.show_on_screen(dumpimg,1)
-    return resultvec
+    return itervec
     
 def evaluate_results(upo, uprefo, lowo, lowrefo, showResults=False, img=None):
     evalvec = np.ones((1,7))
@@ -446,9 +451,13 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    print ''
-    print 'So... it has come to this.'
-    print ''
+##### REPORT
+    evals = np.ones((14,4))
+    
+    for i in range(14):
+        evals[i,:] = match_image(i+1, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 50, multires = True)
+    print evals
+##### EINDE REPORT
 ##### REPORT
     # evals = np.ones((14*3,7))
     # numiter = [10, 20, 50]
