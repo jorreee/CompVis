@@ -111,6 +111,11 @@ def vec2graph(vec):
     plt.show()
     cv2.waitKey(0)
     
+def vec2bar(vec):
+    plt.bar(vec)
+    plt.show()
+    cv2.waitKey(0)
+    
 def draw_hough_lines(img,lines):
     for rho,theta in lines:
         a = np.cos(theta)

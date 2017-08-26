@@ -1,0 +1,1135 @@
+##### 1i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 75.923090967
+                                                   (76.3560709031 upper,
+                                                    75.4901110309 lower)
+    2) Surface analysis: 0.869257514857 percent of ground truth surface found
+                         0.130742485143 percent of ground truth surface missed
+                         0.646392225176 percent of solution surface within ground
+                         0.353607774824 percent of solution surface outside ground
+
+##### 1i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 17 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 14 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 76.6737344623
+                                                   (81.7123870501 upper,
+                                                    71.6350818744 lower)
+    2) Surface analysis: 0.862217473494 percent of ground truth surface found
+                         0.137782526506 percent of ground truth surface missed
+                         0.650341890409 percent of solution surface within ground
+                         0.349658109591 percent of solution surface outside ground
+
+##### 1i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 17 out of 50 maximum.
+Step 1:
+  Stopped at iteration 44 out of 50 maximum.
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 14 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 81.0806624004
+                                                   (97.8480611293 upper,
+                                                    64.3132636714 lower)
+    2) Surface analysis: 0.859201117778 percent of ground truth surface found
+                         0.140798882222 percent of ground truth surface missed
+                         0.644395542077 percent of solution surface within ground
+                         0.355604457923 percent of solution surface outside ground
+
+##### 2i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 5 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 83.2255823584
+                                                   (66.8314466039 upper,
+                                                    99.6197181128 lower)
+    2) Surface analysis: 0.582779187507 percent of ground truth surface found
+                         0.417220812493 percent of ground truth surface missed
+                         0.628661456133 percent of solution surface within ground
+                         0.371338543867 percent of solution surface outside ground
+
+##### 2i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 5 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 86.4498184911
+                                                   (78.4022935322 upper,
+                                                    94.4973434501 lower)
+    2) Surface analysis: 0.544166122715 percent of ground truth surface found
+                         0.455833877285 percent of ground truth surface missed
+                         0.622903201704 percent of solution surface within ground
+                         0.377096798296 percent of solution surface outside ground
+
+##### 2i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 50
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 5 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 118.957185873
+                                                   (153.614780513 upper,
+                                                    84.2995912341 lower)
+    2) Surface analysis: 0.405013095733 percent of ground truth surface found
+                         0.594986904267 percent of ground truth surface missed
+                         0.473193517636 percent of solution surface within ground
+                         0.526806482364 percent of solution surface outside ground
+
+##### 3i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 7 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 36.1418571404
+                                                   (37.1253560096 upper,
+                                                    35.1583582711 lower)
+    2) Surface analysis: 0.812302200899 percent of ground truth surface found
+                         0.187697799101 percent of ground truth surface missed
+                         0.860000611986 percent of solution surface within ground
+                         0.139999388014 percent of solution surface outside ground
+
+##### 3i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 7 out of 20 maximum.
+Step 1:
+  Stopped at iteration 11 out of 20 maximum.
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 37.697572353
+                                                   (40.3234148535 upper,
+                                                    35.0717298526 lower)
+    2) Surface analysis: 0.810214020434 percent of ground truth surface found
+                         0.189785979566 percent of ground truth surface missed
+                         0.855101309358 percent of solution surface within ground
+                         0.144898690642 percent of solution surface outside ground
+
+##### 3i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 50
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 7 out of 50 maximum.
+Step 1:
+  Stopped at iteration 11 out of 50 maximum.
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 64.1260929399
+                                                   (93.1804560273 upper,
+                                                    35.0717298526 lower)
+    2) Surface analysis: 0.728361163898 percent of ground truth surface found
+                         0.271638836102 percent of ground truth surface missed
+                         0.807651630478 percent of solution surface within ground
+                         0.192348369522 percent of solution surface outside ground
+
+##### 4i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 3 out of 10 maximum.
+Step 1:
+  Stopped at iteration 4 out of 10 maximum.
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 31.5519039572
+                                                   (36.0677191852 upper,
+                                                    27.0360887293 lower)
+    2) Surface analysis: 0.807613732189 percent of ground truth surface found
+                         0.192386267811 percent of ground truth surface missed
+                         0.771413387363 percent of solution surface within ground
+                         0.228586612637 percent of solution surface outside ground
+
+##### 4i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 3 out of 20 maximum.
+Step 1:
+  Stopped at iteration 4 out of 20 maximum.
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 36.9559551045
+                                                   (46.8758214797 upper,
+                                                    27.0360887293 lower)
+    2) Surface analysis: 0.758402155959 percent of ground truth surface found
+                         0.241597844041 percent of ground truth surface missed
+                         0.735666399629 percent of solution surface within ground
+                         0.264333600371 percent of solution surface outside ground
+
+##### 4i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 50
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 3 out of 50 maximum.
+Step 1:
+  Stopped at iteration 4 out of 50 maximum.
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 68.4886161518
+                                                   (109.941143574 upper,
+                                                    27.0360887293 lower)
+    2) Surface analysis: 0.716686372014 percent of ground truth surface found
+                         0.283313627986 percent of ground truth surface missed
+                         0.662091508517 percent of solution surface within ground
+                         0.337908491483 percent of solution surface outside ground
+
+##### 5i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 3 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 133.931441937
+                                                   (228.025976357 upper,
+                                                    39.836907517 lower)
+    2) Surface analysis: 0.286109936069 percent of ground truth surface found
+                         0.713890063931 percent of ground truth surface missed
+                         0.270690488416 percent of solution surface within ground
+                         0.729309511584 percent of solution surface outside ground
+
+##### 5i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 3 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 137.908038953
+                                                   (235.138088298 upper,
+                                                    40.6779896083 lower)
+    2) Surface analysis: 0.279181334163 percent of ground truth surface found
+                         0.720818665837 percent of ground truth surface missed
+                         0.276944151906 percent of solution surface within ground
+                         0.723055848094 percent of solution surface outside ground
+
+##### 5i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 50
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 3 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 156.405408923
+                                                   (271.868867497 upper,
+                                                    40.9419503501 lower)
+    2) Surface analysis: 0.282129059038 percent of ground truth surface found
+                         0.717870940962 percent of ground truth surface missed
+                         0.271686742357 percent of solution surface within ground
+                         0.728313257643 percent of solution surface outside ground
+
+##### 6i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 1 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 7 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 78.8516412108
+                                                   (22.2015870931 upper,
+                                                    135.501695329 lower)
+    2) Surface analysis: 0.556271923324 percent of ground truth surface found
+                         0.443728076676 percent of ground truth surface missed
+                         0.561701809232 percent of solution surface within ground
+                         0.438298190768 percent of solution surface outside ground
+
+##### 6i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 1 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 7 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 79.894781625
+                                                   (24.213343908 upper,
+                                                    135.576219342 lower)
+    2) Surface analysis: 0.549837374943 percent of ground truth surface found
+                         0.450162625057 percent of ground truth surface missed
+                         0.557536236724 percent of solution surface within ground
+                         0.442463763276 percent of solution surface outside ground
+
+##### 6i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 1 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 7 out of 50 maximum.
+Step 1:
+  Stopped at iteration 21 out of 50 maximum.
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 92.1863301264
+                                                   (48.6798647822 upper,
+                                                    135.692795471 lower)
+    2) Surface analysis: 0.508275419123 percent of ground truth surface found
+                         0.491724580877 percent of ground truth surface missed
+                         0.501812890219 percent of solution surface within ground
+                         0.498187109781 percent of solution surface outside ground
+
+##### 7i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 9 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 1 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 40.0655082285
+                                                   (46.3983805666 upper,
+                                                    33.7326358904 lower)
+    2) Surface analysis: 0.828414615292 percent of ground truth surface found
+                         0.171585384708 percent of ground truth surface missed
+                         0.802077356153 percent of solution surface within ground
+                         0.197922643847 percent of solution surface outside ground
+
+##### 7i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 9 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 1 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 37.2153999022
+                                                   (42.7786963445 upper,
+                                                    31.6521034599 lower)
+    2) Surface analysis: 0.827874133443 percent of ground truth surface found
+                         0.172125866557 percent of ground truth surface missed
+                         0.815033448069 percent of solution surface within ground
+                         0.184966551931 percent of solution surface outside ground
+
+##### 7i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 9 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 1 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 33.6789380889
+                                                   (38.4177873197 upper,
+                                                    28.9400888581 lower)
+    2) Surface analysis: 0.823728988258 percent of ground truth surface found
+                         0.176271011742 percent of ground truth surface missed
+                         0.801485951159 percent of solution surface within ground
+                         0.198514048841 percent of solution surface outside ground
+
+##### 8i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 7 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 89.1239779811
+                                                   (155.548469029 upper,
+                                                    22.6994869332 lower)
+    2) Surface analysis: 0.833787093325 percent of ground truth surface found
+                         0.166212906675 percent of ground truth surface missed
+                         0.574333987001 percent of solution surface within ground
+                         0.425666012999 percent of solution surface outside ground
+
+##### 8i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 7 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 96.4097688
+                                                   (170.016802492 upper,
+                                                    22.8027351077 lower)
+    2) Surface analysis: 0.843034386733 percent of ground truth surface found
+                         0.156965613267 percent of ground truth surface missed
+                         0.540864751908 percent of solution surface within ground
+                         0.459135248092 percent of solution surface outside ground
+
+##### 8i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 50
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 7 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 120.458267759
+                                                   (209.686800712 upper,
+                                                    31.229734807 lower)
+    2) Surface analysis: 0.806569932983 percent of ground truth surface found
+                         0.193430067017 percent of ground truth surface missed
+                         0.472355515426 percent of solution surface within ground
+                         0.527644484574 percent of solution surface outside ground
+
+##### 9i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 55.6517404954
+                                                   (41.0060416057 upper,
+                                                    70.297439385 lower)
+    2) Surface analysis: 0.69296365154 percent of ground truth surface found
+                         0.30703634846 percent of ground truth surface missed
+                         0.646733356941 percent of solution surface within ground
+                         0.353266643059 percent of solution surface outside ground
+
+##### 9i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 74.573335868
+                                                   (48.0191679161 upper,
+                                                    101.12750382 lower)
+    2) Surface analysis: 0.696460924087 percent of ground truth surface found
+                         0.303539075913 percent of ground truth surface missed
+                         0.600248526418 percent of solution surface within ground
+                         0.399751473582 percent of solution surface outside ground
+
+##### 9i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 29 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Completed max number of iterations: 50
+Step 1:
+  Completed max number of iterations: 50
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 134.707799331
+                                                   (73.0976732396 upper,
+                                                    196.317925422 lower)
+    2) Surface analysis: 0.591275148687 percent of ground truth surface found
+                         0.408724851313 percent of ground truth surface missed
+                         0.559701894586 percent of solution surface within ground
+                         0.440298105414 percent of solution surface outside ground
+
+##### 10i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 2 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 27.093824184
+                                                   (33.3464490388 upper,
+                                                    20.8411993292 lower)
+    2) Surface analysis: 0.874196219797 percent of ground truth surface found
+                         0.125803780203 percent of ground truth surface missed
+                         0.873600428391 percent of solution surface within ground
+                         0.126399571609 percent of solution surface outside ground
+
+##### 10i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 2 out of 20 maximum.
+Step 1:
+  Stopped at iteration 15 out of 20 maximum.
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 30.7606328077
+                                                   (38.1789715967 upper,
+                                                    23.3422940186 lower)
+    2) Surface analysis: 0.841639062094 percent of ground truth surface found
+                         0.158360937906 percent of ground truth surface missed
+                         0.813917699803 percent of solution surface within ground
+                         0.186082300197 percent of solution surface outside ground
+
+##### 10i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 50
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 2 out of 50 maximum.
+Step 1:
+  Stopped at iteration 15 out of 50 maximum.
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 46.4224080995
+                                                   (69.5025221805 upper,
+                                                    23.3422940186 lower)
+    2) Surface analysis: 0.832659457002 percent of ground truth surface found
+                         0.167340542998 percent of ground truth surface missed
+                         0.728139554697 percent of solution surface within ground
+                         0.271860445303 percent of solution surface outside ground
+
+##### 11i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 3 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 47.7972172714
+                                                   (69.0225936516 upper,
+                                                    26.5718408913 lower)
+    2) Surface analysis: 0.84035075558 percent of ground truth surface found
+                         0.15964924442 percent of ground truth surface missed
+                         0.78978090777 percent of solution surface within ground
+                         0.21021909223 percent of solution surface outside ground
+
+##### 11i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 12 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 3 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 53.296214802
+                                                   (79.8466710502 upper,
+                                                    26.7457585538 lower)
+    2) Surface analysis: 0.830957992514 percent of ground truth surface found
+                         0.169042007486 percent of ground truth surface missed
+                         0.78213041379 percent of solution surface within ground
+                         0.21786958621 percent of solution surface outside ground
+
+##### 11i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 12 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 3 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 75.1010389514
+                                                   (118.233213568 upper,
+                                                    31.968864335 lower)
+    2) Surface analysis: 0.777482011396 percent of ground truth surface found
+                         0.222517988604 percent of ground truth surface missed
+                         0.726270802305 percent of solution surface within ground
+                         0.273729197695 percent of solution surface outside ground
+
+##### 12i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 101.369531885
+                                                   (109.714677691 upper,
+                                                    93.0243860795 lower)
+    2) Surface analysis: 0.770931420008 percent of ground truth surface found
+                         0.229068579992 percent of ground truth surface missed
+                         0.455121279028 percent of solution surface within ground
+                         0.544878720972 percent of solution surface outside ground
+
+##### 12i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 118.830209028
+                                                   (144.010924597 upper,
+                                                    93.6494934587 lower)
+    2) Surface analysis: 0.68078616519 percent of ground truth surface found
+                         0.31921383481 percent of ground truth surface missed
+                         0.375569748981 percent of solution surface within ground
+                         0.624430251019 percent of solution surface outside ground
+
+##### 12i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 50
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Completed max number of iterations: 50
+Step 1:
+  Completed max number of iterations: 50
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 146.471646721
+                                                   (204.934625136 upper,
+                                                    88.0086683058 lower)
+    2) Surface analysis: 0.664827659377 percent of ground truth surface found
+                         0.335172340623 percent of ground truth surface missed
+                         0.358550349395 percent of solution surface within ground
+                         0.641449650605 percent of solution surface outside ground
+
+##### 13i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 4 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 6 out of 10 maximum.
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 35.7069109771
+                                                   (39.122638243 upper,
+                                                    32.2911837111 lower)
+    2) Surface analysis: 0.819290981906 percent of ground truth surface found
+                         0.180709018094 percent of ground truth surface missed
+                         0.856318584071 percent of solution surface within ground
+                         0.143681415929 percent of solution surface outside ground
+
+##### 13i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 4 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 6 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 32.115814814
+                                                   (30.8548771052 upper,
+                                                    33.3767525229 lower)
+    2) Surface analysis: 0.841464447192 percent of ground truth surface found
+                         0.158535552808 percent of ground truth surface missed
+                         0.855900235975 percent of solution surface within ground
+                         0.144099764025 percent of solution surface outside ground
+
+##### 13i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 4 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Stopped at iteration 6 out of 50 maximum.
+Step 1:
+  Stopped at iteration 32 out of 50 maximum.
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 26.2791828728
+                                                   (18.439261504 upper,
+                                                    34.1191042417 lower)
+    2) Surface analysis: 0.873081189091 percent of ground truth surface found
+                         0.126918810909 percent of ground truth surface missed
+                         0.853433863572 percent of solution surface within ground
+                         0.146566136428 percent of solution surface outside ground
+
+##### 14i10
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Completed max number of iterations: 10
+Step 1:
+  Completed max number of iterations: 10
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 51.3265986568
+                                                   (51.2997387889 upper,
+                                                    51.3534585248 lower)
+    2) Surface analysis: 0.724964757145 percent of ground truth surface found
+                         0.275035242855 percent of ground truth surface missed
+                         0.837098146572 percent of solution surface within ground
+                         0.162901853428 percent of solution surface outside ground
+
+##### 14i20
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 11 out of 20 maximum.
+Step 1:
+  Completed max number of iterations: 20
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Completed max number of iterations: 20
+Step 1:
+  Completed max number of iterations: 20
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 63.3283170274
+                                                   (57.5621343168 upper,
+                                                    69.094499738 lower)
+    2) Surface analysis: 0.716423170575 percent of ground truth surface found
+                         0.283576829425 percent of ground truth surface missed
+                         0.789722761787 percent of solution surface within ground
+                         0.210277238213 percent of solution surface outside ground
+
+##### 14i50
+
+Starting multi-resolution fitting procedure for orientation 0
+--------
+Step 0:
+  Stopped at iteration 11 out of 50 maximum.
+Step 1:
+  Completed max number of iterations: 50
+
+Starting multi-resolution fitting procedure for orientation 1
+--------
+Step 0:
+  Completed max number of iterations: 50
+Step 1:
+  Completed max number of iterations: 50
+
+--- Evaluation ---
+    1) Average Euclidean distance to ground truth: 98.2676667633
+                                                   (78.9988895261 upper,
+                                                    117.536444 lower)
+    2) Surface analysis: 0.633748310086 percent of ground truth surface found
+                         0.366251689914 percent of ground truth surface missed
+                         0.735715029529 percent of solution surface within ground
+                         0.264284970471 percent of solution surface outside ground
+
+Eval matrix: [Eucl tot, Eucl up, Eucl low, TP / ground, FN / ground, TP / sol, FP / sol]
+np.array([[  7.59230910e+01,   7.63560709e+01,   7.54901110e+01,   8.69257515e-01,
+    1.30742485e-01,   6.46392225e-01,   3.53607775e-01],
+ [  7.66737345e+01,   8.17123871e+01,   7.16350819e+01,   8.62217473e-01,
+    1.37782527e-01,   6.50341890e-01,   3.49658110e-01],
+ [  8.10806624e+01,   9.78480611e+01,   6.43132637e+01,   8.59201118e-01,
+    1.40798882e-01,   6.44395542e-01,   3.55604458e-01],
+ [  8.32255824e+01,   6.68314466e+01,   9.96197181e+01,   5.82779188e-01,
+    4.17220812e-01,   6.28661456e-01,   3.71338544e-01],
+ [  8.64498185e+01,   7.84022935e+01,   9.44973435e+01,   5.44166123e-01,
+    4.55833877e-01,   6.22903202e-01,   3.77096798e-01],
+ [  1.18957186e+02,   1.53614781e+02,   8.42995912e+01,   4.05013096e-01,
+    5.94986904e-01,   4.73193518e-01,   5.26806482e-01],
+ [  3.61418571e+01,   3.71253560e+01,   3.51583583e+01,   8.12302201e-01,
+    1.87697799e-01,   8.60000612e-01,   1.39999388e-01],
+ [  3.76975724e+01,   4.03234149e+01,   3.50717299e+01,   8.10214020e-01,
+    1.89785980e-01,   8.55101309e-01,   1.44898691e-01],
+ [  6.41260929e+01,   9.31804560e+01,   3.50717299e+01,   7.28361164e-01,
+    2.71638836e-01,   8.07651630e-01,   1.92348370e-01],
+ [  3.15519040e+01,   3.60677192e+01,   2.70360887e+01,   8.07613732e-01,
+    1.92386268e-01,   7.71413387e-01,   2.28586613e-01],
+ [  3.69559551e+01,   4.68758215e+01,   2.70360887e+01,   7.58402156e-01,
+    2.41597844e-01,   7.35666400e-01,   2.64333600e-01],
+ [  6.84886162e+01,   1.09941144e+02,   2.70360887e+01,   7.16686372e-01,
+    2.83313628e-01,   6.62091509e-01,   3.37908491e-01],
+ [  1.33931442e+02,   2.28025976e+02,   3.98369075e+01,   2.86109936e-01,
+    7.13890064e-01,   2.70690488e-01,   7.29309512e-01],
+ [  1.37908039e+02,   2.35138088e+02,   4.06779896e+01,   2.79181334e-01,
+    7.20818666e-01,   2.76944152e-01,   7.23055848e-01],
+ [  1.56405409e+02,   2.71868867e+02,   4.09419504e+01,   2.82129059e-01,
+    7.17870941e-01,   2.71686742e-01,   7.28313258e-01],
+ [  7.88516412e+01,   2.22015871e+01,   1.35501695e+02,   5.56271923e-01,
+    4.43728077e-01,   5.61701809e-01,   4.38298191e-01],
+ [  7.98947816e+01,   2.42133439e+01,   1.35576219e+02,   5.49837375e-01,
+    4.50162625e-01,   5.57536237e-01,   4.42463763e-01],
+ [  9.21863301e+01,   4.86798648e+01,   1.35692795e+02,   5.08275419e-01,
+    4.91724581e-01,   5.01812890e-01,   4.98187110e-01],
+ [  4.00655082e+01,   4.63983806e+01,   3.37326359e+01,   8.28414615e-01,
+    1.71585385e-01,   8.02077356e-01,   1.97922644e-01],
+ [  3.72153999e+01,   4.27786963e+01,   3.16521035e+01,   8.27874133e-01,
+    1.72125867e-01,   8.15033448e-01,   1.84966552e-01],
+ [  3.36789381e+01,   3.84177873e+01,   2.89400889e+01,   8.23728988e-01,
+    1.76271012e-01,   8.01485951e-01,   1.98514049e-01],
+ [  8.91239780e+01,   1.55548469e+02,   2.26994869e+01,   8.33787093e-01,
+    1.66212907e-01,   5.74333987e-01,   4.25666013e-01],
+ [  9.64097688e+01,   1.70016802e+02,   2.28027351e+01,   8.43034387e-01,
+    1.56965613e-01,   5.40864752e-01,   4.59135248e-01],
+ [  1.20458268e+02,   2.09686801e+02,   3.12297348e+01,   8.06569933e-01,
+    1.93430067e-01,   4.72355515e-01,   5.27644485e-01],
+ [  5.56517405e+01,   4.10060416e+01,   7.02974394e+01,   6.92963652e-01,
+    3.07036348e-01,   6.46733357e-01,   3.53266643e-01],
+ [  7.45733359e+01,   4.80191679e+01,   1.01127504e+02,   6.96460924e-01,
+    3.03539076e-01,   6.00248526e-01,   3.99751474e-01],
+ [  1.34707799e+02,   7.30976732e+01,   1.96317925e+02,   5.91275149e-01,
+    4.08724851e-01,   5.59701895e-01,   4.40298105e-01],
+ [  2.70938242e+01,   3.33464490e+01,   2.08411993e+01,   8.74196220e-01,
+    1.25803780e-01,   8.73600428e-01,   1.26399572e-01],
+ [  3.07606328e+01,   3.81789716e+01,   2.33422940e+01,   8.41639062e-01,
+    1.58360938e-01,   8.13917700e-01,   1.86082300e-01],
+ [  4.64224081e+01,   6.95025222e+01,   2.33422940e+01,   8.32659457e-01,
+    1.67340543e-01,   7.28139555e-01,   2.71860445e-01],
+ [  4.77972173e+01,   6.90225937e+01,   2.65718409e+01,   8.40350756e-01,
+    1.59649244e-01,   7.89780908e-01,   2.10219092e-01],
+ [  5.32962148e+01,   7.98466711e+01,   2.67457586e+01,   8.30957993e-01,
+    1.69042007e-01,   7.82130414e-01,   2.17869586e-01],
+ [  7.51010390e+01,   1.18233214e+02,   3.19688643e+01,   7.77482011e-01,
+    2.22517989e-01,   7.26270802e-01,   2.73729198e-01],
+ [  1.01369532e+02,   1.09714678e+02,   9.30243861e+01,   7.70931420e-01,
+    2.29068580e-01,   4.55121279e-01,   5.44878721e-01],
+ [  1.18830209e+02,   1.44010925e+02,   9.36494935e+01,   6.80786165e-01,
+    3.19213835e-01,   3.75569749e-01,   6.24430251e-01],
+ [  1.46471647e+02,   2.04934625e+02,   8.80086683e+01,   6.64827659e-01,
+    3.35172341e-01,   3.58550349e-01,   6.41449651e-01],
+ [  3.57069110e+01,   3.91226382e+01,   3.22911837e+01,   8.19290982e-01,
+    1.80709018e-01,   8.56318584e-01,   1.43681416e-01],
+ [  3.21158148e+01,   3.08548771e+01,   3.33767525e+01,   8.41464447e-01,
+    1.58535553e-01,   8.55900236e-01,   1.44099764e-01],
+ [  2.62791829e+01,   1.84392615e+01,   3.41191042e+01,   8.73081189e-01,
+    1.26918811e-01,   8.53433864e-01,   1.46566136e-01],
+ [  5.13265987e+01,   5.12997388e+01,   5.13534585e+01,   7.24964757e-01,
+    2.75035243e-01,   8.37098147e-01,   1.62901853e-01],
+ [  6.33283170e+01,   5.75621343e+01,   6.90944997e+01,   7.16423171e-01,
+    2.83576829e-01,   7.89722762e-01,   2.10277238e-01],
+ [  9.82676668e+01,   7.89988895e+01,   1.17536444e+02,   6.33748310e-01,
+    3.66251690e-01,   7.35715030e-01,   2.64284970e-01]])

@@ -155,8 +155,8 @@ def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter, resdepth = 1)
 ###### EINDE TIJDELIJK
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(np.copy(lms), 26)
     coverage, modes_needed = lm.get_num_eigenvecs_needed(eigenvals)
-    draw.vec2graph(coverage)
-    draw.vec2graph(0.95*np.ones(26))
+    # draw.vec2graph(coverage)
+    # draw.vec2graph(0.95*np.ones(26))
     # print modes_needed
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes_needed)
     stdvar = np.std(lm_reduced, axis=1)
@@ -259,16 +259,17 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
         if showground:
             draw.draw_contour(colgradimg,lowerground,color=(0,255,0), thicc=1)
     
-    io.show_on_screen(colgradimg,1)
-    cv2.imwrite("result_contour.png",colgradimg)
+    #io.show_on_screen(colgradimg,1)
+    #cv2.imwrite("result_contour.png",colgradimg)
     
     dumpimg = io.greyscale_to_colour(io.get_img(imgind))
-    evaluate_results(upper, upperground, lower, lowerground, True, dumpimg)
-    io.show_on_screen(dumpimg,1)
-    cv2.imwrite("result_surface.png",dumpimg)
-    return None
+    resultvec = evaluate_results(upper, upperground, lower, lowerground, True, dumpimg)
+    cv2.imwrite(str(imgind) + "i" + str(maxiter) + '.png',dumpimg)
+    #io.show_on_screen(dumpimg,1)
+    return resultvec
     
 def evaluate_results(upo, uprefo, lowo, lowrefo, showResults=False, img=None):
+    evalvec = np.ones((1,7))
     numpts = upo.size / 2
     
     up = np.reshape(np.copy(upo),(numpts, 2),'F')
@@ -286,8 +287,12 @@ def evaluate_results(upo, uprefo, lowo, lowrefo, showResults=False, img=None):
         uptot += math.hypot(up[i,0] - upref[i,0], up[i,1] - upref[i,1])
         lowtot += math.hypot(low[i,0] - lowref[i,0], low[i,1] - lowref[i,1])
     print '    1) Average Euclidean distance to ground truth: ' + str((uptot + lowtot) / numpts) 
+    evalvec[0,0] = (uptot + lowtot) / numpts
     print '                                                   ('+ str(uptot*2.0 / numpts) +' upper,' 
+    evalvec[0,1] = uptot*2.0 / numpts
     print '                                                    '+ str(lowtot*2.0 / numpts) +' lower)'
+    evalvec[0,2] = lowtot*2.0 / numpts
+
     
     # Contained points 
     numTP = 0
@@ -355,11 +360,15 @@ def evaluate_results(upo, uprefo, lowo, lowrefo, showResults=False, img=None):
                         draw.draw_pixel(img,np.array([c,r]),(10,10,180))
     
     print '    2) Surface analysis: ' + str(numTP / float(inrefCount)) + ' percent of ground truth surface found'
+    evalvec[0,3] = numTP / float(inrefCount)
     print '                         ' + str(numFN / float(inrefCount)) + ' percent of ground truth surface missed'
+    evalvec[0,4] = numFN / float(inrefCount)
     print '                         ' + str(numTP / float(inCount)) + ' percent of solution surface within ground'
+    evalvec[0,5] = numTP / float(inCount)
     print '                         ' + str(numFP / float(inCount)) + ' percent of solution surface outside ground'
+    evalvec[0,6] = numFP / float(inCount)
     
-    return None
+    return evalvec
     
 # Geïnspireerd op https://stackoverflow.com/questions/12443688/calculating-bounding-box-of-numpy-array
 def bbox(points):
@@ -437,7 +446,24 @@ def match_model_to_target(Y, xbar, P):
     return b, tx, ty, s, theta   
     
 if __name__ == '__main__':
-    match_image(4, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 10, multires = True)
+    print ''
+    print 'So... it has come to this.'
+    print ''
+##### REPORT
+    # evals = np.ones((14*3,7))
+    # numiter = [10, 20, 50]
+    # 
+    # for i in range(14):
+    #     for ji in range(3):
+    #         j = numiter[ji]
+    #         print ''
+    #         print '##### ' + str(i+1) + 'i' + str(j)
+    #         evals[(i*3)+ji,:] = match_image(i+1, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = j, multires = True)
+    # 
+    # print ''
+    # print 'Eval matrix: [Eucl tot, Eucl up, Eucl low, TP / ground, FN / ground, TP / sol, FP / sol]'
+    # print evals
+##### EINDE REPORT
     
     #img = cv2.flip(io.get_enhanced_img(1),1)
 #    img = io.get_enhanced_img(1)

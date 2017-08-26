@@ -107,7 +107,7 @@ To determine the number of modes we need for the PCA, we provide a dynamic proce
 		\includegraphics[width=0.19\linewidth]{shape/low_pca5}
 		\caption{Model 2: lower incisors}
 	\end{subfigure}
-	\caption{Principal components in order of our two models, excluding examples 4 and 18. The mean shape is shown in yellow. Each component is shown with a scaling between -3 and +3 times the standard deviation of the component. }
+	\caption{The five main principal components in order of our two models, excluding examples 4 and 18. The mean shape is shown in yellow. Each component is shown with a scaling between -3 and +3 times the standard deviation of the component. }
 	\label{fig:stdvar}
 \end{figure}
 
@@ -286,18 +286,96 @@ To determine if the ASM algorithm has converged at the current resolution, we ch
 We only check this for the crowns of the teeth however, as it is a lot harder for the roots to converge due to the absence of clearly defined edges.
 We also allow for a maximum of 10 iterations per resolution level, as the algorithm might end up diverging when ran for a large amount of iterations.
 
-
-
-
 \section{Evaluation}
 \label{sec:eval}
+We evaluate the performance of our algorithm using leave-one-out testing on all 14 training images. The results are marked {\color{green} green} where the solution surface overlaps with the ground truth, {\color{red} red} where the solution surface incorrectly marks an area and {\color{yellow} yellow} where the ground truth hasn't been found. 
 
-\todo[inline]{TODO: Tim}
+Some cases immediately stand out. %TODO figure me rare results
+
+To judge our general performance, we use three measures:
+
+\subsection{Euclidian distance}
+The euclidian distance between a solution and its ground truth is the total absolute distance between all corresponding landmark points. When looking for trends in the results from our experiments with varying parameter settings, we notice two main properties. The first is that increasing the number of maximum iterations our fitting procedure can take has negative effects. The boxplots in Figure \ref{fig:euclit} (a) clearly show this correlation. One example is shown in (b), where the extra allowed iterations slightly improve the lower fit but send the upper fit flying vertically.
+
+\begin{figure}
+	\centering
+	\begin{subfigure}{0.4\linewidth}
+		\centering
+		\includegraphics[width=\columnwidth]{results/chart_euclit}
+		\caption{}
+	\end{subfigure}
+	\begin{subfigure}{0.57\linewidth}
+		\centering
+		\includegraphics[width=0.45\columnwidth]{results/7i10}
+		\includegraphics[width=0.45\columnwidth]{results/7i50}
+		\caption{\texttt{maxiter} 10 and 50 for image 7}
+	\end{subfigure}
+	\caption{Euclidian distance to the ground truth per maximum number of iterations. Longer iteration has a negative effect on performance. } %TODO plot number of it vs number max it
+	\label{fig:euclit}
+\end{figure}
+
+Inspecting the boxplots in Figure \ref{fig:euclud} (a) show that the lower teeth are fitted generally better. This is due to a more homogeneous appearance of bottom incisors. Two examples can be found in (b). Although the upper incisors have very different shapes, the lower are very similar and are marked much better as a result. 
+
+\begin{figure}
+	\centering
+	\begin{subfigure}{0.32\linewidth}
+		\centering
+		\includegraphics[width=\columnwidth]{results/chart_euclud}
+		\caption{}
+	\end{subfigure}
+	\begin{subfigure}{0.65\linewidth}
+		\centering
+		\includegraphics[width=0.45\columnwidth]{results/8i10}
+		\includegraphics[width=0.45\columnwidth]{results/4i50}
+		\caption{Image 4 (left) and 8 (right)}
+	\end{subfigure}
+	\caption{Euclidian distance to the ground truth for upper and lower models. Lower incisors appear to be more homogeneous and easier to mark. } 
+	\label{fig:euclud}
+\end{figure}
+
+\subsection{Ground truth surface found}
+The bar chart in Figure \ref{fig:miss} (a)
+
+\begin{figure}
+	\centering
+	\begin{subfigure}{0.4\linewidth}
+		\centering
+		\includegraphics[width=\columnwidth]{results/chart_euclit}
+		\caption{}
+	\end{subfigure}
+	\begin{subfigure}{0.57\linewidth}
+		\centering
+		\includegraphics[width=0.45\columnwidth]{results/7i10}
+		\includegraphics[width=0.45\columnwidth]{results/7i50}
+		\caption{\texttt{maxiter} 10 and 50 for image 7}
+	\end{subfigure}
+	\caption{Euclidian distance to the ground truth per maximum number of iterations. Longer iteration has a negative effect on performance. } %TODO plot number of it vs number max it
+	\label{fig:miss}
+\end{figure}
+
+\subsection{Correctness of solution surface}
+
+\begin{figure}
+	\centering
+	\begin{subfigure}{0.4\linewidth}
+		\centering
+		\includegraphics[width=\columnwidth]{results/chart_euclit}
+		\caption{}
+	\end{subfigure}
+	\begin{subfigure}{0.57\linewidth}
+		\centering
+		\includegraphics[width=0.45\columnwidth]{results/7i10}
+		\includegraphics[width=0.45\columnwidth]{results/7i50}
+		\caption{\texttt{maxiter} 10 and 50 for image 7}
+	\end{subfigure}
+	\caption{Euclidian distance to the ground truth per maximum number of iterations. Longer iteration has a negative effect on performance. } %TODO plot number of it vs number max it
+	\label{fig:sol}
+\end{figure}
 
 \section{Conclusion}
 \label{sec:concl}
 
-\todo[inline]{TODO: Tim, if even necessary after evaluation?}
+\todo[inline]{TODO: Tim}
 
 \bibliography{references}
 \bibliographystyle{plain}
