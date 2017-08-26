@@ -334,22 +334,30 @@ Inspecting the boxplots in Figure \ref{fig:euclud} (a) show that the lower teeth
 \end{figure}
 
 \subsection{Ground truth surface found}
-The bar chart in Figure \ref{fig:miss} (a)
+The bar chart in Figure \ref{fig:miss} (a) shows the percentage of ground truth we have missed in our solutions. The {\color{blue} blue} bars are for the runs with 10 maximum iterations, {\color{orange} orange} for 20 iterations and {\color{green} green} for 50. We have an average miss rate of about 22\%. Some results stand out because of their high miss rate. There are two reasons for this. The first is the presence of highly visible edges due to orthodontic materials. This confuses the algorithm and pushes the iterated approximations away, as shown in subfigure (b). The second is that some radiographs are off-center by more than half a tooth, causing our initialisation to start a whole tooth to the left or right. This is shown in subfigure (c). 
 
 \begin{figure}
 	\centering
-	\begin{subfigure}{0.4\linewidth}
+	\begin{subfigure}{\linewidth}
 		\centering
-		\includegraphics[width=\columnwidth]{results/chart_euclit}
+		\includegraphics[width=0.8\columnwidth]{results/chart_surf2}
+		\includegraphics[width=0.15\columnwidth]{results/chart_missbox}
 		\caption{}
 	\end{subfigure}
-	\begin{subfigure}{0.57\linewidth}
+
+	\begin{subfigure}{0.48\linewidth}
 		\centering
-		\includegraphics[width=0.45\columnwidth]{results/7i10}
-		\includegraphics[width=0.45\columnwidth]{results/7i50}
-		\caption{\texttt{maxiter} 10 and 50 for image 7}
+		\includegraphics[width=0.48\columnwidth]{results/2i50}
+		\includegraphics[width=0.48\columnwidth]{results/9i50}
+		\caption{Results for images 2 and 9}
 	\end{subfigure}
-	\caption{Euclidian distance to the ground truth per maximum number of iterations. Longer iteration has a negative effect on performance. } %TODO plot number of it vs number max it
+	\begin{subfigure}{0.48\linewidth}
+		\centering
+		\includegraphics[width=0.48\columnwidth]{results/5i50}
+		\includegraphics[width=0.48\columnwidth]{results/6i50}
+		\caption{Results for images 5 and 6}
+	\end{subfigure}
+	\caption{Ground truth surface missed per image.  } %TODO plot number of it vs number max it
 	\label{fig:miss}
 \end{figure}
 
