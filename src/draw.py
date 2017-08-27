@@ -3,21 +3,14 @@ import cv2 as cv2
 import numpy as np
 import landmarks as lms
 import matplotlib.pyplot as plt
-import io as io
 
-# Takes a pixel coordinate and colors it in
+# Takes a pixel coordinate and colors it
 def draw_pixel(img,coords,color=(255,0,0)):
-    # if (coords[0] < 0 or coords[0] >= img.shape[0] or coords[1] < 0 or coords[1] >= img.shape[1]): 
-    #     #print 'Value fell outside range of image: ' + str(coords) + ' on img ' + str(img.shape)
-    #     return None
     img[coords[1],coords[0]] = [color[0],color[1],color[2]]    
     return None
 
-# Takes a pixel coordinate and colors it in
+# Takes a pixel coordinate and colors it
 def draw_square(img,coords):
-    # if (coords[0] < 0 or coords[0] >= img.shape[0] or coords[1] < 0 or coords[1] >= img.shape[1]): 
-    #     #print 'Value fell outside range of image: ' + str(coords) + ' on img ' + str(img.shape)
-    #     return None
     img[int(coords[1,0]):int(coords[1,1]),int(coords[0,0]):int(coords[0,1])] = [255,255,255]    
     return None
 
@@ -86,7 +79,8 @@ def draw_normals(img,lpts,norms):
                 2);
     
     return None
-    
+
+# Draws a slice used for the grey level model    
 def draw_slice(img,slicel):
     print slicel[0,1]
     for i in range(slicel.size / 2):
@@ -105,17 +99,20 @@ def draw_jaw_separation(img,yval,color=(0,0,255)):
                 1);
     
     return None
-    
+
+# Transform a vector to a graph    
 def vec2graph(vec):
     plt.plot(vec)
     plt.show()
     cv2.waitKey(0)
-    
+ 
+# Transform a vector to a bar chart  
 def vec2bar(vec):
     plt.bar(vec)
     plt.show()
     cv2.waitKey(0)
-    
+
+# Draw the hough lines used for the initial estimate   
 def draw_hough_lines(img,lines):
     for rho,theta in lines:
         a = np.cos(theta)
@@ -129,7 +126,3 @@ def draw_hough_lines(img,lines):
         cv2.line(img,(x1,y1),(x2,y2),(0,0,255),1)
     
     return None
-
-    
-if __name__ == '__main__':
-    vec2graph(np.array([1,2,3,4]))
