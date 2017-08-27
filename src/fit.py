@@ -21,46 +21,36 @@ def find_new_points(imgtf, shapeo, means, covs, k, m, orient):
     normalvectors = np.reshape(normalvectors,(normalvectors.size / 2, 2),'F')
     shape = np.reshape(shape,(shape.size / 2, 2),'F')
  
-    #col = io.greyscale_to_colour(imgtf)
-    #draw.draw_contour(col,shape)
-    # Voor ieder punt
+    # For each point
     for i in range(shape.size / 2):
-        # Bereken stat model
-        #slicel = gl.get_slice_indices(shape[i],normalvectors[i],k)
-        #pmean, pcov = gl.get_statistical_model(edgeimgs,slicel,k)
         
-        # Bereken eigen sample
+        # Calculate own sample (slice along normal)
         slices = gl.get_slice_indices(shape[i],normalvectors[i],m)
         own_gradient_profile = gl.slice_image(slices,imgtf)
         
         dist = np.zeros(2*(m - k) + 1)
         for j in range(0,2*(m - k) + 1):
-            # Pinv gives the same result as inv for Mahalanobis
-            #dist[j] = np.dot(np.dot((own_gradient_profile[j:j+(2*k + 1)].flatten() - pmean).T,LA.pinv(pcov)),(own_gradient_profile[j:j+(2*k + 1)].flatten() - pmean))
             dist[j] = scp.mahalanobis(own_gradient_profile[j:j+(2*k + 1)].flatten(),means[i],LA.pinv(covs[i]))              
         min_ind = np.argmin(dist)
-        lower = slices[0,:].size / 4.0 #+ slices[0,:].size / 8.0
+        # Calculate the lower boundary and upper boundary for central 50%
+        lower = slices[0,:].size / 4.0
         upper = lower + slices[0,:].size / 2.0
-        #print '#####'
-        #print lower
-        #print upper
-        #print min_ind
-        #print str(min_ind + k)
+        # Check whether the crown part of upper incisors is not in central 50%
         if (orient == 0 and i % 40 >= 10 and i % 40 < 30 and  (min_ind + k < lower or min_ind + k > upper)):
             counter += 1
+        # Check whether the crown part of lower incisors is not in central 50%
         elif (orient == 1 and (i % 40 < 8 or i % 40 >= 28) and  (min_ind + k < lower or min_ind + k > upper)):
             counter += 1
         new_point = slices[:,min_ind+k]
         shape[i] = new_point
-    #draw.draw_contour(col,shape,(0,0,255))
-    #io.show_on_screen(col,1)
-    #print str(float(counter) / (shape.size/4))
+    # If less than 10% of the newly suggested points are outside of the central 50%, the algorithm has converged
     if float(counter) / (shape.size/4) < 0.1:
         stop = True
     shape = np.reshape(shape,(shape.size, 1),'F')  
     return shape, stop
     
-   
+
+# Code for the actual ASM algorithm as discussed by Cootes et al  
 def asm(imgtf, means, covs, b, tx, ty, s, theta, k, m, stdvar, mean, eigenvecs, maxiter, orient):
     numit = -1
     for i in range(maxiter):                 
@@ -84,6 +74,8 @@ def asm(imgtf, means, covs, b, tx, ty, s, theta, k, m, stdvar, mean, eigenvecs, 
             
     return b, tx, ty, s, theta, numit
 
+# Single resolution ASM algorithm. 
+# Calculates the initial position and the statistical grey level model, and calls the ASM algorithm.    
 def srasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
     lms,_ = lm.procrustes(marks)
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
@@ -104,7 +96,8 @@ def srasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
     b, ntx, nty, nsc, itheta = asm(imgtf, means, covs, b, itx, ity, isc, itheta, k, m, stdvar, mean, eigenvecs, maxiter, orient)      
     return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),ntx,nty,nsc,itheta)
     
-    
+# Single resolution ASM algorithm with half the original image size. 
+# # Calculates the initial position and the statistical grey level model, rescales the images and calls the ASM algorithm.    
 def srasm2(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
     lms,_ = lm.procrustes(marks)
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
@@ -132,53 +125,15 @@ def srasm2(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
     return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),ntx * 2,nty * 2,nsc * 2,itheta)
 
 
+# Multi resolution ASM algorithm. 
+# # Calculates the initial position and the statistical grey level model, rescales the images to the required resolution and calls the ASM algorithm.
 def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter, resdepth = 1):
     itervec = np.array([0,0])
-###### TIJDELIJK VOOR REPORT
-    # imgr = io.greyscale_to_colour(io.get_img(1))
-    # draw.draw_square(imgr,np.array([[0, 700],[0, 930]]))
-    # for i in range(26):
-    #     shapei = draw.move_into_frame(np.copy(marks[:,i]))
-    #     draw.draw_contour(imgr,shapei,color=(150 - 4*i,222,20 + 9*i),thicc=2)
-    # 
-    # io.show_on_screen(imgr,1)
-    # if True:
-    #     return None
-###### EINDE TIJDELIJK
     lms,_ = lm.procrustes(marks)
-###### TIJDELIJK VOOR REPORT
-    # imgr = io.greyscale_to_colour(io.get_img(1))
-    # draw.draw_square(imgr,np.array([[0, 700],[0, 930]]))
-    # for i in range(26):
-    #     shapei = draw.make_object_space_visible(np.copy(lms[:,i]))
-    #     draw.draw_contour(imgr,shapei,color=(150 - 4*i,222,20 + 9*i),thicc=2)
-    # 
-    # io.show_on_screen(imgr,1)
-    # if True:
-    #     return None
-###### EINDE TIJDELIJK
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(np.copy(lms), 26)
     coverage, modes_needed = lm.get_num_eigenvecs_needed(eigenvals)
-    # draw.vec2graph(coverage)
-    # draw.vec2graph(0.95*np.ones(26))
-    # print modes_needed
     mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes_needed)
     stdvar = np.std(lm_reduced, axis=1)
-###### TIJDELIJK VOOR REPORT
-    # imgr = io.greyscale_to_colour(io.get_img(1))
-    # for i in range(5):
-    #     draw.draw_square(imgr,np.array([[0, 700],[0, 930]]))
-    #     for k in range(3):
-    #         termsplus = np.zeros((5,1))
-    #         termsmin = np.zeros((5,1))
-    #         termsplus[i] = (k+1)*stdvar[i]
-    #         termsmin[i] = -1*(k+1)*stdvar[i]
-    #         draw.draw_contour(imgr,draw.make_object_space_visible(lm.pca_reconstruct(termsplus,mean,eigenvecs)),color=(10,63 + k*63,100),thicc=2)
-    #         draw.draw_contour(imgr,draw.make_object_space_visible(lm.pca_reconstruct(termsmin,mean,eigenvecs)),color=(10,100,63 + k*63),thicc=2)
-    #     
-    #     draw.draw_contour(imgr,draw.make_object_space_visible(mean),color=(0,230,230),thicc=3)
-    #     io.show_on_screen(imgr,1)
-###### EINDE TIJDELIJK
     
     croppedmarks = np.array([])
     for i in range(13):
@@ -208,10 +163,6 @@ def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter, resdepth = 1)
             smallermarks = np.reshape(smallermarks,(smallermarks.size / 26,26),'F') 
             j += 1 
         
-        #wollah = io.greyscale_to_colour(edgies[18])
-        #ground = np.reshape(smallermarks[:,18],(smallermarks[:,12].size,1))
-        #draw.draw_contour(wollah,ground,color=(0,0,255), thicc=1)
-        #io.show_on_screen(wollah,1)
         means, covs = gl.get_statistical_model_new(edgies,smallermarks,k)
         b, ntx, nty, nsc, itheta, itervec[i] = asm(limgtf, means, covs, b, float(itx) / math.pow(2.0,(resdepth-i)), float(ity) / math.pow(2.0,(resdepth-i)), float(isc) / math.pow(2.0,(resdepth-i)), itheta, k, m, stdvar, mean, eigenvecs, maxiter, orient)
         itx = ntx * math.pow(2.0,(resdepth-i))
@@ -219,7 +170,12 @@ def mrasm(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter, resdepth = 1)
         isc = nsc * math.pow(2.0,(resdepth-i))
         
     return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),itx,ity,isc,itheta), itervec
-    
+ 
+# Matches the model to the image with the given image index.
+# Orientation determines whether the upper, lower or both orientations of the incisors will be considered.
+# Showground determines whether the ground of the image needs to be shown
+# Modes, k, m and maxiter are parameters of the ASM algorithm as disussed by Cootes et al
+# Multires toggles the multi resolution framework
 def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 50, multires = True):
     img = io.get_enhanced_img(imgind)
     imges = io.get_all_gradient_img(imgind)
@@ -272,7 +228,8 @@ def match_image(imgind, orientation = 2, showground = True, modes = 5, k = 5, m 
     cv2.imwrite(str(imgind) + "i" + str(maxiter) + '.png',dumpimg)
     #io.show_on_screen(dumpimg,1)
     return itervec
-    
+
+# Evaluates the fitting results with the three dfiferent metrics    
 def evaluate_results(upo, uprefo, lowo, lowrefo, showResults=False, img=None):
     evalvec = np.ones((1,7))
     numpts = upo.size / 2
@@ -375,7 +332,7 @@ def evaluate_results(upo, uprefo, lowo, lowrefo, showResults=False, img=None):
     
     return evalvec
     
-# Geïnspireerd op https://stackoverflow.com/questions/12443688/calculating-bounding-box-of-numpy-array
+# Gets the bounding box of a shape, inspired by https://stackoverflow.com/questions/12443688/calculating-bounding-box-of-numpy-array
 def bbox(points):
     """
     [xmin xmax]
@@ -391,21 +348,6 @@ def bbox(points):
     a[1,1] = int(math.ceil(a[1,1]))
     
     return a
-    
-#def srasm4(enhimgtf, edgeimgs, marks, orient, k, m, modes, maxiter):
-#    lms,_ = lm.procrustes(marks)
-#    mean, eigenvecs, eigenvals, lm_reduced = lm.pca_reduce(lms, modes)
-#    stdvar = np.std(lm_reduced, axis=1)
-#    
-#    itx, ity, isc, itheta = init.get_initial_transformation(enhimgtf,mean,orient)
-#    b = np.zeros((modes,1))
-#    
-#    imgtf = pp.apply_sobel(enhimgtf)
-#    imgtf = cv2.pyrDown(cv2.pyrDown(imgtf))
-#    edgies = np.array(map(lambda x: cv2.pyrDown(cv2.pyrDown(x)),edgeimgs))
-#    b, ntx, nty, nsc, itheta = asm(imgtf, edgies, b, itx / 4, ity / 4, isc / 4, itheta, k, m, stdvar, mean, eigenvecs, maxiter)      
-#    return lm.transform_shape(lm.pca_reconstruct(b,mean,eigenvecs),ntx * 4,nty * 4,nsc * 4,itheta)
-    
 
 # Finds the shape parameter terms b and the pose transformation T(tx,ty,s,theta) 
 #  that best matches the model x = xbar + P * b (in object space) tot the new points Y (in image space).
@@ -457,7 +399,7 @@ if __name__ == '__main__':
     for i in range(14):
         evals[i,:] = match_image(i+1, orientation = 2, showground = True, modes = 5, k = 5, m = 10, maxiter = 50, multires = True)
     print evals
-##### EINDE REPORT
+##### END REPORT
 ##### REPORT
     # evals = np.ones((14*3,7))
     # numiter = [10, 20, 50]
@@ -472,62 +414,7 @@ if __name__ == '__main__':
     # print ''
     # print 'Eval matrix: [Eucl tot, Eucl up, Eucl low, TP / ground, FN / ground, TP / sol, FP / sol]'
     # print evals
-##### EINDE REPORT
-    
-    #img = cv2.flip(io.get_enhanced_img(1),1)
-#    img = io.get_enhanced_img(1)
-#    img = pp.apply_sobel(img)
-#    imges = io.get_all_gradient_img(1)
-#    marks = io.read_all_landmarks_by_orientation(1,1)
-##    
-#    croppedmarks = np.array([])
-#    for i in range(13):
-#        croppedmarks = np.append(croppedmarks,lm.transform_shape(np.reshape(marks[:,i],(marks[:,i].size,1)),-1150,-500,1,0))
-#    for i in range(13):
-#        croppedmarks = np.append(croppedmarks,lm.transform_shape(np.reshape(marks[:,i + 13],(marks[:,i + 13].size,1)),-1173,-500,1,0))
-#    croppedmarks = np.reshape(croppedmarks,(croppedmarks.size / 26,26),'F') 
-#    
-#    wollah = io.greyscale_to_colour(cv2.pyrDown(imges[2]))
-#    ground = np.reshape(croppedmarks[:,2],(croppedmarks[:,12].size,1))
-#    half = ground.size / 2
-#    second = np.append(ground[40:48,0],ground[half+40:half+48,0])
-#    first = np.append(ground[68:80,0],ground[half+68:half+80,0])
-#    #ground = lm.transform_shape(ground,- big[:,0].size / 2, - big[0,:].size / 2,1 / 2,0)
-#    
-#    ground2 = lm.transform_shape(second,0, 0,1.0 / 2,0)
-#    ground = lm.transform_shape(first,0, 0,1.0 / 2,0)
-#    draw.draw_contour(wollah,ground,color=(0,0,255), thicc=1)
-#    draw.draw_contour(wollah,ground2,color=(0,0,255), thicc=1)
-#    io.show_on_screen(wollah,1)
-
-    #gl.get_statistical_model_new(imges,croppedmarks,5)
-    
-    
-    
-    
-    
-    #wollah = io.get_enhanced_img(2)
-    #imges = io.get_all_gradient_img(2)
-    #print imges.shape
-    #marks = io.read_all_landmarks_by_orientation(0,2)
-    #points = srasm2(wollah, imges, marks,0, 5, 5)
-    #owollah = io.greyscale_to_colour(cv2.flip(pp.apply_sobel(wollah),1))
-    #
-    #marks2 = io.read_all_landmarks_by_orientation(0)
-    #ground = np.reshape(marks2[:,14],(marks2[:,14].size,1))
-    
-    #!!!!!!!!!!!!!!!!
-    # Landmark transformation for cutoff
-    #ground = lm.transform_shape(ground,-1150,-500,1,0)
-    # Mirrored landmark transformation for cutoff
-    #ground = lm.transform_shape(ground,-1173,-500,1,0)
-    
-    
-    
-    #draw.draw_contour(owollah,ground,color=(0,0,255), thicc=1)
-    #
-    #draw.draw_contour(owollah,points, thicc=1)
-    #io.show_on_screen(owollah,1)
+##### END REPORT
     
     
 
