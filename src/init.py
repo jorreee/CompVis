@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import cv2
 import numpy as np
-import draw as draw
 import io as io
 import greylevel as gl
 
+# Get the jaw separation and upper and lower offsets for the initial estimate
 def get_jaw_separation(img):
     smallerimg = img[250:650,150:550]
     means = []
@@ -24,6 +24,7 @@ def get_jaw_separation(img):
     
     return sep, upperyf, loweryf
 
+# Old deprecated centralisation method for the horizontal offset
 def get_centralisation_old(img, yval):
     start = 300
     eind = 401
@@ -47,13 +48,12 @@ def get_centralisation_old(img, yval):
     print x_offset
     return x_offset
 
+# Get the horizontal offset (centralisation) by calculating the hough lines
 def get_centralisation(img):
     lines, xoffset = hough(img)
-    #coli = io.greyscale_to_colour(img)
-    #draw.draw_hough_lines(coli,lines)
-    #io.show_on_screen(io.greyscale_to_colour(img),1)
     return xoffset
 
+# Calculate the hough lines and the horizontal offset
 def hough(img):
     edges = cv2.Canny(img,50,150,apertureSize = 3)
     lines = cv2.HoughLines(edges,1,np.pi/180,15)
