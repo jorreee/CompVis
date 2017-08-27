@@ -288,7 +288,7 @@ We also allow for a maximum of 10 iterations per resolution level, as the algori
 \label{sec:eval}
 We evaluate the performance of our algorithm using leave-one-out testing on all 14 training images. The results are marked {\color{green} green} where the solution surface overlaps with the ground truth, {\color{red} red} where the solution surface incorrectly marks an area and {\color{yellow} yellow} where the ground truth hasn't been found. 
 
-To judge our performance, we use three measures. 
+To judge our performance, we use three measures. The Euclidian distance shows trends in performance that are correlated with properties or parameters. The miss rate indicates the percentage of ground truth we have found (and missed) and shows us that certain types of radiographs are very hard to mark. Finally, the percentage of our solution that marks the ground truth teaches us that visibility of edges is crucial. 
 
 \subsection{Euclidian distance}
 The euclidian distance between a solution and its ground truth is the total absolute distance between all corresponding landmark points. When looking for trends in the results from our experiments with varying parameter settings, we notice two main properties. The first is that increasing the number of maximum iterations our fitting procedure can take has negative effects. The boxplots in Figure \ref{fig:euclit} (a) clearly show this correlation. One example is shown in (b), where the extra allowed iterations slightly improve the lower fit but send the upper fit flying off vertically. 
@@ -351,14 +351,14 @@ The bar chart in Figure \ref{fig:miss} (a) shows the percentage of ground truth 
 
 	\begin{subfigure}{0.48\linewidth}
 		\centering
-		\includegraphics[width=0.48\columnwidth]{results/2i50}
-		\includegraphics[width=0.48\columnwidth]{results/9i50}
+		\includegraphics[width=0.48\columnwidth]{results/2i10}
+		\includegraphics[width=0.48\columnwidth]{results/9i10}
 		\caption{Results for images 2 and 9}
 	\end{subfigure}
 	\begin{subfigure}{0.48\linewidth}
 		\centering
-		\includegraphics[width=0.48\columnwidth]{results/5i50}
-		\includegraphics[width=0.48\columnwidth]{results/6i50}
+		\includegraphics[width=0.48\columnwidth]{results/5i10}
+		\includegraphics[width=0.48\columnwidth]{results/6i10}
 		\caption{Results for images 5 and 6}
 	\end{subfigure}
 	\caption{Ground truth surface missed per image. Orthodontic materials and off-center initialisation causes great errors. }
@@ -366,7 +366,7 @@ The bar chart in Figure \ref{fig:miss} (a) shows the percentage of ground truth 
 \end{figure}
 
 \subsection{Correctness of solution surface}
-In Figure \ref{fig:sol} (a) we show the percentage of the solution that overlaps with the ground truth. The effects of Figure \ref{fig:miss} (b) and (c) also influence this measure. However, new peaks in error rate emerge in images 8 and 12. These come from very noisy radiographs that appear almost blurred. Detecting the roots is nearly impossible, even from the enhanced images, and causes our algorithm to extend its approximation far beyond the ground truth. These effects accumulate to an error rate of about 35\%. 
+In Figure \ref{fig:sol} (a) we show the percentage of the solution that overlaps with the ground truth. The effects of Figure \ref{fig:miss} (b) and (c) also influence this measure. However, new peaks in error rate emerge in images 8 and 12. These come from very noisy radiographs that appear almost blurred. Detecting the roots is nearly impossible. We see the result of edge detection on the enhanced images in subfigure (c) and even the manual landmark indicates only the crowns in image 8. These effects accumulate to an overall error rate of about 35\%. 
 
 \begin{figure}
 	\centering
@@ -379,8 +379,8 @@ In Figure \ref{fig:sol} (a) we show the percentage of the solution that overlaps
 	
 	\begin{subfigure}{0.48\linewidth}
 		\centering
-		\includegraphics[width=0.48\columnwidth]{results/8i50}
-		\includegraphics[width=0.48\columnwidth]{results/12i50}
+		\includegraphics[width=0.48\columnwidth]{results/8i10}
+		\includegraphics[width=0.48\columnwidth]{results/12i10}
 		\caption{Results for images 8 and 12}
 	\end{subfigure}
 	\begin{subfigure}{0.48\linewidth}
