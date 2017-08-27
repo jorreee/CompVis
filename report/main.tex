@@ -169,7 +169,7 @@ The results of applying the different pre-processing steps on a dental radiograp
 \label{sec:fitting}
 To fit our model to an image, we have to find the model instance $x =T_{(X_t,Y_t,s,\theta)}(\bar{x} + Pb)$ that most accurately aligns with the incisors in the image.
 This translates to finding the pose parameters $T_{(X_t,Y_t,s,\theta)}$ and the shape parameters $b$.
-This is achieved in two steps: In the first step, an initial estimate for the pose parameters is obtained, which is discussed in Section \ref{subsec:initial} . The second step finally fits the model to the image by applying the Active Shape Model algorithm, which is discussed in Section \ref{subsec:ASM}
+This is achieved in two steps: In the first step, an initial estimate for the pose parameters is obtained, which is discussed in Section \ref{subsec:initial} . The second step finally fits the model to the image by applying the Active Shape Model algorithm, which is discussed in Section \ref{subsec:ASM}.
 
 \subsection{Initial pose estimate}
 \label{subsec:initial}
@@ -283,15 +283,17 @@ This allows the algorithm to first find an estimate in a coarser low resolution 
 To determine if the ASM algorithm has converged at the current resolution, we check whether $>90\%$ of the newly proposed landmark points fall in the central $50\%$ of the $2m + 1$ slice among the previous landmark position.
 We only check this for the crowns of the teeth however, as it is a lot harder for the roots to converge due to the absence of clearly defined edges.
 We also allow for a maximum of 10 iterations per resolution level, as the algorithm might end up diverging when ran for a large amount of iterations.
+The results of this decision are elaborated upon in the evaluation.
 
 \section{Evaluation}
 \label{sec:eval}
 We evaluate the performance of our algorithm using leave-one-out testing on all 14 training images. The results are marked {\color{green} green} where the solution surface overlaps with the ground truth, {\color{red} red} where the solution surface incorrectly marks an area and {\color{yellow} yellow} where the ground truth hasn't been found. 
 
-To judge our performance, we use three measures. The Euclidian distance shows trends in performance that are correlated with properties or parameters. The miss rate indicates the percentage of ground truth we have found (and missed) and shows us that certain types of radiographs are very hard to mark. Finally, the percentage of our solution that marks the ground truth teaches us that visibility of edges is crucial. 
+To judge our performance, we use three measures: Euclidian distance, ground truth found rate, and percentage of solution marking the ground truth. 
+The Euclidian distance shows trends in performance that are correlated with properties or parameters. The miss rate indicates the percentage of ground truth we have found (and missed) and shows us that certain types of radiographs are very hard to mark. Finally, the percentage of our solution that marks the ground truth teaches us that visibility of edges is crucial. 
 
 \subsection{Euclidian distance}
-The euclidian distance between a solution and its ground truth is the total absolute distance between all corresponding landmark points. When looking for trends in the results from our experiments with varying parameter settings, we notice two main properties. The first is that increasing the number of maximum iterations our fitting procedure can take has negative effects. The boxplots in Figure \ref{fig:euclit} (a) clearly show this correlation. One example is shown in (b), where the extra allowed iterations slightly improve the lower fit but send the upper fit flying off vertically. 
+The Euclidian distance between a solution and its ground truth is the total absolute distance between all corresponding landmark points. When looking for trends in the results from our experiments with varying parameter settings, we notice two main properties. The first is that increasing the number of maximum iterations our fitting procedure can take has negative effects. The boxplots in Figure \ref{fig:euclit} (a) clearly show this correlation. One example is shown in (b), where the extra allowed iterations slightly improve the lower fit but send the upper fit flying off vertically. 
 
 Note that because of our stop condition a raised maximum number of iterations doesn't automatically mean more iterations done. Figure \ref{fig:euclit} (c) shows how many iterations were passed in each step. {\color{blue} Blue} is the subsampled upper fit, {\color{orange} orange} the full resolution upper fit, {\color{green} green} and {\color{red} red} analoguous for the lower fit. The upper model clearly runs into \texttt{maxiter} more often, implying it is fitting poorly. 
 
@@ -366,7 +368,7 @@ The bar chart in Figure \ref{fig:miss} (a) shows the percentage of ground truth 
 \end{figure}
 
 \subsection{Correctness of solution surface}
-In Figure \ref{fig:sol} (a) we show the percentage of the solution that overlaps with the ground truth. The effects of Figure \ref{fig:miss} (b) and (c) also influence this measure. However, new peaks in error rate emerge in images 8 and 12. These come from very noisy radiographs that appear almost blurred. Detecting the roots is nearly impossible. We see the result of edge detection on the enhanced images in subfigure (c) and even the manual landmark indicates only the crowns in image 8. These effects accumulate to an overall error rate of about 35\%. 
+In Figure \ref{fig:sol} (a) we show the percentage of the solution that overlaps with the ground truth. The effects of Figure \ref{fig:miss} (b) and (c) also influence this measure. However, new peaks in error rate emerge in images 8 and 12. These come from very noisy radiographs that appear almost blurred. Detecting the roots is nearly impossible. We see the result of edge detection on the enhanced images in subfigure (c) and even the manually labelled ground truth landmark indicates only the crowns in image 8. These effects accumulate to an overall error rate of about 35\%. 
 
 \begin{figure}
 	\centering
