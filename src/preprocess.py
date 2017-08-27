@@ -2,6 +2,8 @@
 import cv2
 import numpy as np
 
+# Applies the filter train as discussed by Huang et al in
+#  "Noise Removal and Contrast Enhancement for X-Ray Images".
 def apply_filter_train(image):
     #Apply mediam bilateral filter
     image1 = cv2.medianBlur(image,9)
@@ -17,7 +19,8 @@ def apply_filter_train(image):
     image5 = clahe.apply(image4)
     
     return image5
-    
+
+# Applies the Canny operator. Not used in the rest of this project.    
 def apply_canny(img_o,img):
     h1 = 10*2*2*1.5
     detection = cv2.Canny(img,h1/2,h1)
@@ -25,12 +28,14 @@ def apply_canny(img_o,img):
     result[detection.astype(np.bool)]=1
     
     return result
-    
+
+# Applies the Laplacian operator. Not used in the rest of this project.        
 def apply_laplacian(img):
     laplacian = cv2.Laplacian(img,cv2.CV_64F,ksize=11)
     
     return laplacian
-    
+
+# Applies the Sobel operator to detect edges.     
 def apply_sobel(img):
     img = cv2.GaussianBlur(img,(3,3),0)
     kersize = 3
@@ -43,33 +48,5 @@ def apply_sobel(img):
     combined = cv2.addWeighted(absx, 0.5, absy, 0.5, 0)
     return combined
     
-    
-if __name__ == '__main__':
-    img = cv2.imread("data/Radiographs/02.tif")
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = img[550:1430,1150:1850]
-    img_o = np.copy(img)
-    
-    cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-    height, width = img.shape;
-    cv2.resizeWindow('image', width / 2, height /2)
-    cv2.imshow('image',img);
-    #cv2.waitKey(0)
-
-    img = apply_filter_train(img)    
-    
-    cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-    height, width = img.shape;
-    cv2.resizeWindow('image', width / 2, height /2)
-    cv2.imshow('image',img);
-    #cv2.waitKey(0)
-
-    img = apply_sobel(img)  
-    #img[img > 30] *= 2  
-    
-    cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-    height, width = img.shape;
-    cv2.resizeWindow('image', width / 2, height /2)
-    cv2.imshow('image',img);
 
     
