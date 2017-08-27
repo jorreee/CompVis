@@ -4,9 +4,6 @@ import numpy as np
 from numpy import linalg as LA
 import math
 
-
-lengthn = 160
-
 #Transform a shape x with a scale factor s, rotation factor theta and translation t
 def transform_shape(xo,tx=0, ty=0, s=1, theta=0):
     x = np.copy(xo)
@@ -39,7 +36,6 @@ def transform_shape_inv(xo,tx=0, ty=0, s=1, theta=0):
 
 # Aligns a list of shapes on the first element of that list. 
 # Returns the collection of aligned shapes and the mean shape.
-#TODO
 def procrustes(ls):
     
     #Translate landmarks to origin
@@ -101,7 +97,8 @@ def center_orig_all(ls):
         return center_orig(mark).flatten()
     # Center all the columns to the origin
     return np.apply_along_axis(flatten_center,0,ls)
-    
+ 
+# Normalize a shape   
 def normalize_shape(v):
     norm=LA.norm(v)
     if norm==0: 
@@ -213,6 +210,7 @@ def pca(X, nb_components=0):
 def pca_reconstruct(terms, mean, eigenvecs):
     return cv2.PCABackProject(terms, mean, eigenvecs.T)
 
+# Get the number of eigenvecs needed to reach the 95% threshold
 def get_num_eigenvecs_needed(eigenvals):
     num = 0
     tot = sum(eigenvals)
