@@ -3,27 +3,32 @@ import cv2
 import numpy as np
 import preprocess as pp
 
+# Show an image on screen
 def show_on_screen(img,scale=1):
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     height, width, _ = img.shape;
     cv2.resizeWindow('image', width / scale, height / scale)
     cv2.imshow('image',img);
     cv2.waitKey(0);
-    
+
+# Show a greyscale image on screen    
 def show_on_screen_greyscale(img,scale=1):
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     height, width = img.shape;
     cv2.resizeWindow('image', width / scale, height / scale)
     cv2.imshow('image',img);
-    
+
+# Transform the color space from greyscale to BGR    
 def greyscale_to_colour(img):
     return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
+# Return a white image that allows the representation of shapes in object space
 def get_objectspace_img():
     img = np.zeros((512,512,3), np.uint8)
     img[:] = (255, 255, 255)
     return img
 
+# Get a radiograph image and crop it
 def get_img(i):
     if i < 10:
         img = cv2.imread("data/Radiographs/0"+str(i)+".tif")
@@ -33,18 +38,22 @@ def get_img(i):
     img = img[500:1430,1150:1850]
     
     return img
-    
+
+# Get an enhanced image and apply the sobel operator on it    
 def get_gradient_img(i):
     imgi = get_img(i)
     imgi = pp.apply_filter_train(imgi)
     imgi = pp.apply_sobel(imgi)
     return imgi
-    
+ 
+# Get a radiograph image, crop it and apply the filter train on it to enhance it   
 def get_enhanced_img(i):
     imgi = get_img(i)
     imgi = pp.apply_filter_train(imgi)
     return imgi
-    
+ 
+# Get all gradient images except the one with the given index to generate
+#  the grey level model   
 def get_all_gradient_img(excepti=-1):
     edges = np.array([])
     for i in range(28):
@@ -77,7 +86,7 @@ def read_mirrored_landmark(lm_file):
     for i in range(40):
         pts[i,0] = 3022 + pts[i,0]
     return pts.flatten('F').T
-    
+  
 def get_result_eval():
     return np.array([[  7.59230910e+01,   7.63560709e+01,   7.54901110e+01,   8.69257515e-01,
     1.30742485e-01,   6.46392225e-01,   3.53607775e-01],
