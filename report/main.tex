@@ -41,11 +41,9 @@ The goal of this project was to develop a model based segmentation approach, cap
 We achieved this by utilizing the Active Shape Models approach, as it was first presented by Cootes et al \cite{cootes2000introduction}.
 This report is structured as follows: 
 Section \ref{sec:shape} starts of by discussing the deformable shape model, which is followed up by Section \ref{sec:preproc} concerning the pre-processing of the dental radiographs. Section \ref{sec:fitting} presents the actual model fitting algorithm, with the evaluation of the fitting presented in Section \ref{sec:eval}.
-Finally, we conclude our report in Section \ref{sec:concl}.
 
 \section{Shape Model}
 \label{sec:shape}
-\todo[inline]{TODO: Tim}
 We use two models in our algorithm. One describes the mean and variation of all four upper teeth (incisors 1-4), the other describes the lower teeth (incisors 5-8). 
 
 The choice for two models containing four incisors each, as opposed to one model per tooth, comes from two main reasons that both stem from simple empirical observations about the human dental structure. The first is that the upper and lower incisors are always found next to eachother and in the same order. Natural variations on the spacing between them, their height differences and sizes are all captured in our final model description. Our approach ensures that teeth will never be marked out of order within the model, even when some overlap. The second observation is that natural variations don't favor one side over the other and thus we expect a symmetric model. Including mirrored examples during training is one way to incorporate this information. Our model adds to the effect by also enforcing symmetry in the variation in spacing, height and size.
@@ -137,27 +135,27 @@ The results of applying the different pre-processing steps on a dental radiograp
 
 \begin{figure}
   \centering
-	\begin{minipage}[b]{0.32\linewidth}
+	\begin{minipage}[b]{0.23\linewidth}
 		\includegraphics[width=\linewidth]{preprocess/original.png}
 		\subcaption{Cropped}
 	\end{minipage}
-	\begin{minipage}[b]{0.32\linewidth}
+	\begin{minipage}[b]{0.23\linewidth}
 		\includegraphics[width=\linewidth]{preprocess/median.png}
 		\subcaption{Median filter}
 	\end{minipage}
-	\begin{minipage}[b]{0.32\linewidth}
+	\begin{minipage}[b]{0.23\linewidth}
 		\includegraphics[width=\linewidth]{preprocess/bilateral.png}
 		\subcaption{Bilateral Filter}
 	\end{minipage}
-	\begin{minipage}[b]{0.32\linewidth}
+	\begin{minipage}[b]{0.23\linewidth}
 		\includegraphics[width=\linewidth]{preprocess/hats.png}
-		\subcaption{Top and Bottom hat}
+		\subcaption{Morphology}
 	\end{minipage}
-	\begin{minipage}[b]{0.32\linewidth}
+	\begin{minipage}[b]{0.23\linewidth}
 		\includegraphics[width=\linewidth]{preprocess/clahe.png}
 		\subcaption{CLAHE}
 	\end{minipage}
-	\begin{minipage}[b]{0.32\linewidth}
+	\begin{minipage}[b]{0.23\linewidth}
 		\includegraphics[width=\linewidth]{preprocess/gradients.png}
 		\subcaption{Edges (Sobel)}
 	\end{minipage}
@@ -333,7 +331,7 @@ Inspecting the boxplots in Figure \ref{fig:euclud} (a) confirms that the lower t
 		\centering
 		\includegraphics[width=0.45\columnwidth]{results/8i10}
 		\includegraphics[width=0.45\columnwidth]{results/4i50}
-		\caption{Image 4 (left) and 8 (right)}
+		\caption{Image 8 (left) and 4 (right)}
 	\end{subfigure}
 	\caption{Euclidian distance to the ground truth for upper and lower models. Lower incisors appear to be more homogeneous and easier to mark. } 
 	\label{fig:euclud}
@@ -387,9 +385,9 @@ In Figure \ref{fig:sol} (a) we show the percentage of the solution that overlaps
 	\end{subfigure}
 	\begin{subfigure}{0.48\linewidth}
 		\centering
-		\includegraphics[width=0.48\columnwidth]{results/8i50}
-		\includegraphics[width=0.48\columnwidth]{results/12i50}
-		\caption{Gerant is gey. Pls sobel enhanced images van 8 en 12 hier}
+		\includegraphics[width=0.48\columnwidth]{results/8sobel}
+		\includegraphics[width=0.48\columnwidth]{results/12sobel}
+		\caption{Sobel edges for images 8 and 12}
 	\end{subfigure}
 	\caption{Erroneous solution surface per image. Poorly visible incisor roots cause the approximation to fly off. }
 	\label{fig:sol}
