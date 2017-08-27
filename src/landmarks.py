@@ -159,10 +159,8 @@ def get_align_params(x1,x2):
 #             a matrix containing the PCA terms for all input shapes as columns
 #
 def pca_reduce(lmls,num_comp):
-    #lms = convert_landmarklist_to_np(lms)
-    #TODO vorm
     lms = np.copy(lmls).T
-    eigenvals, eigenvecs, mean_n = pca(lms,num_comp)#,np.asarray(mean.T)
+    eigenvals, eigenvecs, mean_n = pca(lms,num_comp)
     mean_n = np.reshape(mean_n,(mean_n.shape[0],1))
     eigenvals = np.reshape(eigenvals,(eigenvals.shape[0],1))
     
@@ -221,7 +219,6 @@ def get_num_eigenvecs_needed(eigenvals):
             num = num+1
         gain = sum(eigenvals[0:i+1])/tot - last
         new = last+gain
-        # print str(i) + ': ' + str(gain) + ' totalling ' + str(100*new) + '%'
         last = new
         if not found and sum(eigenvals[0:i+1])/tot > 0.95:
             found = True
